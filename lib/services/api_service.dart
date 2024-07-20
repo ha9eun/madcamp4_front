@@ -65,8 +65,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData;
+      return json.decode(response.body);
+    } else if (response.statusCode == 409) {
+      throw Exception('409');
     } else {
       throw Exception('Failed to create couple');
     }

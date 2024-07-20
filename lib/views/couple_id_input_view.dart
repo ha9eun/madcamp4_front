@@ -30,16 +30,53 @@ class CoupleIdInputView extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                // 커플 생성409
-                await loginViewModel.createCouple(
-                  _partnerUsernameController.text,
-                  _startDateController.text,
-                );
-                // 캘린더 화면으로 이동
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => CalendarView()),
-                );
+                try {
+                  await loginViewModel.createCouple(
+                    _partnerUsernameController.text,
+                    _startDateController.text,
+                  );
+                  // 커플 정보 생성 성공 후 캘린더 화면으로 이동
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => CalendarView()),
+                  );
+                } catch (e) {
+                  if (e.toString().contains('409')) {
+                    // 409 상태 코드인 경우 경고 메시지 표시
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text('해당 사용자는 이미 다른 사람과 연결되어 있습니다.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('확인'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    // 다른 오류인 경우 일반 오류 메시지 표시
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text('Failed to create couple. Please try again.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }
               },
               child: Text('Submit'),
             ),

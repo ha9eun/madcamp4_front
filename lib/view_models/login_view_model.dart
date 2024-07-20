@@ -76,7 +76,13 @@ class LoginViewModel extends ChangeNotifier {
         );
         notifyListeners();
       } catch (e) {
-        print('커플 생성 실패: $e');
+        if (e.toString().contains('409')) {
+          throw Exception('409');
+        } else {
+          print('커플 생성 실패: $e');
+          throw Exception('Failed to create couple');
+        }
+
       }
     } else {
       print('createCouple: _user가 null입니다');
