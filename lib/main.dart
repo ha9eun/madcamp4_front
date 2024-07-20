@@ -1,3 +1,5 @@
+import 'package:couple/view_models/register_view_model.dart';
+import 'package:couple/view_models/user_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
@@ -20,10 +22,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => RegisterViewModel(
+            apiService: apiService,
+            secureStorageService: secureStorageService,
+          ),
+        ),
+        ChangeNotifierProvider(
           create: (_) => LoginViewModel(
             apiService: apiService,
             secureStorageService: secureStorageService,
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserViewModel(),
         ),
       ],
       child: MaterialApp(

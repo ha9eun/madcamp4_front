@@ -72,4 +72,25 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> register(String username, String password, String nickname) async {
+    final response = await http.post(
+      Uri.parse('${Config.baseUrl}/users/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+        'nickname': nickname,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData;
+    } else {
+      throw Exception('Failed to register');
+    }
+  }
+
 }

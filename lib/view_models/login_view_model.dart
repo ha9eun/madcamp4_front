@@ -78,6 +78,8 @@ class LoginViewModel extends ChangeNotifier {
       } catch (e) {
         print('커플 생성 실패: $e');
       }
+    } else {
+      print('createCouple: _user가 null입니다');
     }
   }
 
