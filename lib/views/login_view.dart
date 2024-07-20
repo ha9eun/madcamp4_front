@@ -4,6 +4,7 @@ import 'package:couple/views/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
+import 'couple_id_input_view.dart';
 
 
 class LoginView extends StatelessWidget {
@@ -43,10 +44,16 @@ class LoginView extends StatelessWidget {
                     _passwordController.text,
                   );
                   if (loginViewModel.isLoggedIn) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => CalendarView()),
-                    );
+                    if (loginViewModel.user?.coupleId != null) {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => CalendarView()),
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => CoupleIdInputView()),
+                      );
+                    }
                   }
                 } catch (e) {
                   // 에러 처리
