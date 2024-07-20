@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
+import '../view_models/user_view_model.dart';
 import 'calendar_view.dart';
 import 'couple_id_input_view.dart';
-import 'register_view.dart';
 
 class LoginView extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -12,6 +12,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginViewModel = Provider.of<LoginViewModel>(context);
+    final userViewModel = Provider.of<UserViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,35 +37,24 @@ class LoginView extends StatelessWidget {
                 await loginViewModel.login(
                   _usernameController.text,
                   _passwordController.text,
-                  context
+                  context,
                 );
-
-                if (loginViewModel.isLoggedIn) {
-                  if (loginViewModel.user?.coupleId != null) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => CalendarView()),
-                    );
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => CoupleIdInputView()),
-                    );
-                  }
+                if (userViewModel.user?.coupleId != null) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => CalendarView()),
+                  );
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => CoupleIdInputView()),
+                  );
                 }
               },
               child: Text('Login'),
             ),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterView()),
-                );
-              },
-              child: Text('Register'),
-            ),
+            if (loginViewModel.isLoading)
+              CircularProgressIndicator(),
           ],
         ),
       ),

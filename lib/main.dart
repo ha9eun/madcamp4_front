@@ -66,9 +66,12 @@ class _AuthCheckState extends State<AuthCheck> {
 
   Future<void> _checkLoginStatus() async {
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+
     await loginViewModel.checkLoginStatus(context);
+
     if (loginViewModel.isLoggedIn) {
-      if (loginViewModel.user?.coupleId != null) {
+      if (userViewModel.user?.coupleId != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => CalendarView()),
@@ -86,6 +89,7 @@ class _AuthCheckState extends State<AuthCheck> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

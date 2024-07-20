@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/couple_view_model.dart';
 import '../view_models/user_view_model.dart';
+import '../view_models/login_view_model.dart';
+import 'login_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarView extends StatefulWidget {
@@ -22,10 +24,23 @@ class _CalendarViewState extends State<CalendarView> {
   Widget build(BuildContext context) {
     final coupleViewModel = Provider.of<CoupleViewModel>(context);
     final userViewModel = Provider.of<UserViewModel>(context);
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Calendar'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await loginViewModel.logout(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginView()),
+              );
+            },
+          ),
+        ],
       ),
       body: coupleViewModel.isLoading
           ? Center(child: CircularProgressIndicator())

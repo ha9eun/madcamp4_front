@@ -1,3 +1,4 @@
+import 'package:couple/view_models/user_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
@@ -10,7 +11,7 @@ class CoupleIdInputView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginViewModel = Provider.of<LoginViewModel>(context);
-
+    final userViewModel = Provider.of<UserViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Enter Couple Information'),
@@ -34,6 +35,7 @@ class CoupleIdInputView extends StatelessWidget {
                   await loginViewModel.createCouple(
                     _partnerUsernameController.text,
                     _startDateController.text,
+                    context
                   );
                   // 커플 정보 생성 성공 후 캘린더 화면으로 이동
                   Navigator.pushReplacement(

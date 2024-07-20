@@ -43,4 +43,10 @@ class CoupleViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clear() {
+    _couple = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

@@ -1,20 +1,18 @@
-
-import 'package:couple/view_models/user_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/secure_storage_service.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
+import '../view_models/user_view_model.dart';
+import 'couple_view_model.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final ApiService apiService;
   final SecureStorageService secureStorageService;
 
-  User? _user;
   bool _isLoading = false;
   bool _isLoggedIn = false;
 
-  User? get user => _user;
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
 
@@ -24,23 +22,30 @@ class LoginViewModel extends ChangeNotifier {
   });
 
   Future<void> login(String username, String password, BuildContext context) async {
+    _isLoading = true;
+    notifyListeners();
+
     try {
       final response = await apiService.login(username, password);
       String userId = response['_id'];
 
-      // 사용자 정보 생성 및 Secure Storage에 저장
-      _user = User.fromJson(response);
-      // UserViewModel에 User 객체 설정
-      Provider.of<UserViewModel>(context, listen: false).setUser(_user!);
-
+      // Secure Storage에 사용자 ID 저장
       await secureStorageService.writeSecureData('user_id', userId);
 
+      // UserViewModel에 User 객체 설정
+      User user = User.fromJson(response);
+      Provider.of<UserViewModel>(context, listen: false).setUser(user);
+
       _isLoggedIn = true;
+      _isLoading = false;
       notifyListeners();
 
       print('로그인 성공: ${userId}');
     } catch (e) {
       print('로그인 실패: $e');
+      _isLoggedIn = false;
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -53,10 +58,10 @@ class LoginViewModel extends ChangeNotifier {
       // 저장된 사용자 ID가 있는 경우 사용자 정보 불러오기
       try {
         final response = await apiService.getUserInfo(userId);
-        _user = User.fromJson(response);
+        User user = User.fromJson(response);
 
         // UserViewModel에 User 객체 설정
-        Provider.of<UserViewModel>(context, listen: false).setUser(_user!);
+        Provider.of<UserViewModel>(context, listen: false).setUser(user);
         _isLoggedIn = true;
       } catch (e) {
         print('사용자 정보 불러오기 실패: $e');
@@ -70,19 +75,23 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createCouple(String partnerUsername, String startDate) async {
-    if (_user != null) {
+  Future<void> createCouple(String partnerUsername, String startDate, BuildContext context) async {
+    User? user = Provider.of<UserViewModel>(context, listen: false).user;
+    if (user != null) {
       try {
-        final response = await apiService.createCouple(_user!.id, partnerUsername, startDate);
+        final response = await apiService.createCouple(user.id, partnerUsername, startDate);
         String coupleId = response['coupleId'] ?? '';
 
-
-        _user = User(
-          id: _user!.id,
-          username: _user!.username,
-          nickname: _user!.nickname,
+        user = User(
+          id: user.id,
+          username: user.username,
+          nickname: user.nickname,
           coupleId: coupleId,
         );
+
+        // UserViewModel에 업데이트된 User 객체 설정
+        Provider.of<UserViewModel>(context, listen: false).setUser(user);
+
         notifyListeners();
       } catch (e) {
         if (e.toString().contains('409')) {
@@ -91,16 +100,16 @@ class LoginViewModel extends ChangeNotifier {
           print('커플 생성 실패: $e');
           throw Exception('Failed to create couple');
         }
-
       }
     } else {
-      print('createCouple: _user가 null입니다');
+      print('createCouple: user가 null입니다');
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     await secureStorageService.deleteSecureData('user_id');
-    _user = null;
+    Provider.of<UserViewModel>(context, listen: false).clearUser();
+    Provider.of<CoupleViewModel>(context, listen: false).clear();
     _isLoggedIn = false;
     notifyListeners();
   }
