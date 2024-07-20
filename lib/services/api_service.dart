@@ -52,20 +52,24 @@ class ApiService {
       throw Exception('Failed to fetch user info');
     }
   }
-
-  Future<void> updateCoupleId(String userId, String coupleId) async {
+  Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, String startDate) async {
     final response = await http.put(
-      Uri.parse('${Config.baseUrl}/users/$userId'),
+      Uri.parse('${Config.baseUrl}/users/couple/$userId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'coupleId': coupleId,
+        'partnerUsername': partnerUsername,
+        'startDate': startDate,
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update couple ID');
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData;
+    } else {
+      throw Exception('Failed to create couple');
     }
   }
+
 }

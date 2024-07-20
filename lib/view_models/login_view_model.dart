@@ -61,10 +61,13 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateCoupleId(String coupleId) async {
+  Future<void> createCouple(String partnerUsername, String startDate) async {
     if (_user != null) {
       try {
-        await apiService.updateCoupleId(_user!.id, coupleId);
+        final response = await apiService.createCouple(_user!.id, partnerUsername, startDate);
+        String coupleId = response['coupleId'] ?? '';
+
+
         _user = User(
           id: _user!.id,
           username: _user!.username,
@@ -73,7 +76,7 @@ class LoginViewModel extends ChangeNotifier {
         );
         notifyListeners();
       } catch (e) {
-        print('커플 ID 업데이트 실패: $e');
+        print('커플 생성 실패: $e');
       }
     }
   }
