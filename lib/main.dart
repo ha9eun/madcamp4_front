@@ -1,3 +1,4 @@
+import 'package:couple/view_models/couple_view_model.dart';
 import 'package:couple/view_models/register_view_model.dart';
 import 'package:couple/view_models/user_view_model.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +25,23 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => RegisterViewModel(
             apiService: apiService,
-            secureStorageService: secureStorageService,
+            secureStorageService: SecureStorageService(),
           ),
         ),
         ChangeNotifierProvider(
           create: (_) => LoginViewModel(
             apiService: apiService,
-            secureStorageService: secureStorageService,
+            secureStorageService: SecureStorageService(),
           ),
         ),
         ChangeNotifierProvider(
           create: (_) => UserViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CoupleViewModel(
+            apiService: apiService,
+            userViewModel: Provider.of<UserViewModel>(context, listen: false),
+          ),
         ),
       ],
       child: MaterialApp(
@@ -59,7 +66,7 @@ class _AuthCheckState extends State<AuthCheck> {
 
   Future<void> _checkLoginStatus() async {
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    await loginViewModel.checkLoginStatus();
+    await loginViewModel.checkLoginStatus(context);
     if (loginViewModel.isLoggedIn) {
       if (loginViewModel.user?.coupleId != null) {
         Navigator.pushReplacement(

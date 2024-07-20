@@ -1,4 +1,7 @@
+
+import 'package:couple/view_models/user_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/secure_storage_service.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
@@ -20,13 +23,16 @@ class LoginViewModel extends ChangeNotifier {
     required this.secureStorageService,
   });
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String username, String password, BuildContext context) async {
     try {
       final response = await apiService.login(username, password);
       String userId = response['_id'];
 
       // 사용자 정보 생성 및 Secure Storage에 저장
       _user = User.fromJson(response);
+      // UserViewModel에 User 객체 설정
+      Provider.of<UserViewModel>(context, listen: false).setUser(_user!);
+
       await secureStorageService.writeSecureData('user_id', userId);
 
       _isLoggedIn = true;
@@ -38,7 +44,7 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> checkLoginStatus() async {
+  Future<void> checkLoginStatus(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
@@ -48,6 +54,9 @@ class LoginViewModel extends ChangeNotifier {
       try {
         final response = await apiService.getUserInfo(userId);
         _user = User.fromJson(response);
+
+        // UserViewModel에 User 객체 설정
+        Provider.of<UserViewModel>(context, listen: false).setUser(_user!);
         _isLoggedIn = true;
       } catch (e) {
         print('사용자 정보 불러오기 실패: $e');

@@ -36,6 +36,7 @@ class LoginView extends StatelessWidget {
                 await loginViewModel.login(
                   _usernameController.text,
                   _passwordController.text,
+                  context
                 );
 
                 if (loginViewModel.isLoggedIn) {

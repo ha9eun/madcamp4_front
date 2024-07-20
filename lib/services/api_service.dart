@@ -94,4 +94,20 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getCoupleInfo(String coupleId) async {
+    final response = await http.get(
+      Uri.parse('${Config.baseUrl}/calendar/couples/$coupleId/coupleInfo'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print('getCoupleInfo API statusCode: ${response.statusCode}');
+    print('getCoupleInfo API response.body: ${response.body}');
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch couple info');
+    }
+  }
+
 }
