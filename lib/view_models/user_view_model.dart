@@ -15,4 +15,11 @@ class UserViewModel extends ChangeNotifier {
     _user = null;
     notifyListeners();
   }
+
+  void debugPrintUserInfo() {
+    print('User ID: ${_user?.id}');
+    print('Username: ${_user?.username}');
+    print('Nickname: ${_user?.nickname}');
+    print('Couple ID: ${_user?.coupleId}');
+  }
 }

@@ -63,7 +63,7 @@ class ApiService {
         'startDate': startDate,
       }),
     );
-
+    print('createCouple API response body: ${response.body}');
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else if (response.statusCode == 409) {
@@ -95,6 +95,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getCoupleInfo(String coupleId) async {
+    print('getCoupleInfo APi coupleId: $coupleId');
     final response = await http.get(
       Uri.parse('${Config.baseUrl}/calendar/couples/$coupleId/coupleInfo'),
       headers: <String, String>{

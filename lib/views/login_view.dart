@@ -4,6 +4,7 @@ import '../view_models/login_view_model.dart';
 import '../view_models/user_view_model.dart';
 import 'calendar_view.dart';
 import 'couple_id_input_view.dart';
+import 'register_view.dart';
 
 class LoginView extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -55,6 +56,16 @@ class LoginView extends StatelessWidget {
             ),
             if (loginViewModel.isLoading)
               CircularProgressIndicator(),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterView()),
+                );
+              },
+              child: Text('Don\'t have an account? Register here'),
+            ),
           ],
         ),
       ),

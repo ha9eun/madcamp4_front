@@ -3,28 +3,13 @@ import 'package:provider/provider.dart';
 import '../view_models/couple_view_model.dart';
 import '../view_models/user_view_model.dart';
 import '../view_models/login_view_model.dart';
-import 'login_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarView extends StatefulWidget {
-  @override
-  _CalendarViewState createState() => _CalendarViewState();
-}
-
-class _CalendarViewState extends State<CalendarView> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
-    });
-  }
-
+class CalendarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final coupleViewModel = Provider.of<CoupleViewModel>(context);
     final userViewModel = Provider.of<UserViewModel>(context);
-    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,12 +17,9 @@ class _CalendarViewState extends State<CalendarView> {
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () async {
-              await loginViewModel.logout(context);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginView()),
-              );
+            onPressed: () {
+              // 로그아웃 처리
+              Provider.of<LoginViewModel>(context, listen: false).logout(context);
             },
           ),
         ],

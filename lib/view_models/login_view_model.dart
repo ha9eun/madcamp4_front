@@ -41,6 +41,12 @@ class LoginViewModel extends ChangeNotifier {
       notifyListeners();
 
       print('로그인 성공: ${userId}');
+
+      // 로그인 후 커플 정보 로드
+      if (user.coupleId != null) {
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+      }
+
     } catch (e) {
       print('로그인 실패: $e');
       _isLoggedIn = false;
@@ -80,19 +86,22 @@ class LoginViewModel extends ChangeNotifier {
     if (user != null) {
       try {
         final response = await apiService.createCouple(user.id, partnerUsername, startDate);
-        String coupleId = response['coupleId'] ?? '';
 
-        user = User(
-          id: user.id,
-          username: user.username,
-          nickname: user.nickname,
-          coupleId: coupleId,
-        );
+        String coupleId = response['_id'];
 
+        // 기존 User 객체 업데이트
+        user = user.copyWith(coupleId: coupleId);
+        print("user coupleId: ${user.coupleId}");
         // UserViewModel에 업데이트된 User 객체 설정
         Provider.of<UserViewModel>(context, listen: false).setUser(user);
 
         notifyListeners();
+        Provider.of<UserViewModel>(context, listen: false).debugPrintUserInfo(); // 디버깅 정보 출력
+
+
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+
+
       } catch (e) {
         if (e.toString().contains('409')) {
           throw Exception('409');

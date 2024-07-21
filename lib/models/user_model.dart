@@ -28,4 +28,18 @@ class User {
       'coupleId': coupleId,
     };
   }
+
+  User copyWith({
+    String? id,
+    String? username,
+    String? nickname,
+    String? coupleId,
+  }) {
+    return User(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      nickname: nickname ?? this.nickname,
+      coupleId: coupleId ?? this.coupleId,
+    );
+  }
 }
