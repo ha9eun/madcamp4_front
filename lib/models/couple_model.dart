@@ -35,6 +35,20 @@ class Couple {
     );
   }
 
+  Couple copyWith({
+    int? daysSinceStart,
+    String? partnerNickname,
+    List<Anniversary>? anniversaries,
+    List<Schedule>? schedules
+  }) {
+    return Couple(
+      daysSinceStart: daysSinceStart ?? this.daysSinceStart,
+      partnerNickname: partnerNickname ?? this.partnerNickname,
+      anniversaries: anniversaries ?? this.anniversaries,
+      schedules: schedules ?? this.schedules
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'partnerNickname': partnerNickname,

@@ -45,6 +45,7 @@ class LoginViewModel extends ChangeNotifier {
       // 로그인 후 커플 정보 로드
       if (user.coupleId != null) {
         await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
       }
 
     } catch (e) {
@@ -100,6 +101,7 @@ class LoginViewModel extends ChangeNotifier {
 
 
         await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
 
 
       } catch (e) {

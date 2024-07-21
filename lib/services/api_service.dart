@@ -111,4 +111,19 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getAnniversaries(String coupleId) async {
+    final response = await http.get(
+      Uri.parse('${Config.baseUrl}/calendar/couples/$coupleId/anniversaries'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch anniversaries');
+    }
+  }
+
 }

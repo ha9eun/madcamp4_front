@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/anniversary_model.dart';
 import '../services/api_service.dart';
 import '../models/couple_model.dart';
 import 'user_view_model.dart';
@@ -44,6 +45,41 @@ class CoupleViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Failed to fetch couple info: $e');
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchAnniversaries() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      String? coupleId = userViewModel.user?.coupleId;
+      if (coupleId == null) {
+        print('coupleId is null');
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      print('Fetching anniversaries for coupleId: $coupleId');
+      final response = await apiService.getAnniversaries(coupleId);
+      List<Anniversary> anniversaries = (response['anniversaries'] as List)
+          .map((item) => Anniversary.fromJson(item))
+          .toList();
+
+      if (_couple != null) {
+        _couple = _couple!.copyWith(anniversaries: anniversaries);
+      } else {
+        throw Exception('_couple is null');
+      }
+
+      _isLoading = false;
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    } catch (e) {
+      print('Failed to fetch anniversaries: $e');
       _isLoading = false;
       notifyListeners();
     }
