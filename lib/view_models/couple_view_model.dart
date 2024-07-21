@@ -18,9 +18,7 @@ class CoupleViewModel extends ChangeNotifier {
   CoupleViewModel({
     required this.apiService,
     required this.userViewModel,
-  }) {
-    fetchCoupleInfo(); // ViewModel 초기화 시 데이터 fetch
-  }
+  });
 
   Future<void> fetchCoupleInfo() async {
     if (_isCoupleInfoFetched) return;  // 이미 호출되었으면 리턴
