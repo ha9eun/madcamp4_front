@@ -56,73 +56,85 @@ class _CoupleIdInputViewState extends State<CoupleIdInputView> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (_selectedStartDate == null) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Error'),
-                      content: Text('Please select a start date.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('OK'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_selectedStartDate == null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Error'),
+                          content: Text('Please select a start date.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                  return;
-                }
-                try {
-                  await loginViewModel.createCouple(
-                    _partnerUsernameController.text,
-                    _selectedStartDate!,
-                    context,
-                  );
-                  // 커플 정보 생성 성공 후 메인 화면으로 이동
-                  Navigator.pushReplacementNamed(context, '/main');
-                } catch (e) {
-                  if (e.toString().contains('409')) {
-                    // 409 상태 코드인 경우 경고 메시지 표시
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Error'),
-                        content: Text('해당 사용자는 이미 다른 사람과 연결되어 있습니다.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('확인'),
+                      );
+                      return;
+                    }
+                    try {
+                      await loginViewModel.createCouple(
+                        _partnerUsernameController.text,
+                        _selectedStartDate!,
+                        context,
+                      );
+                      // 커플 정보 생성 성공 후 메인 화면으로 이동
+                      Navigator.pushReplacementNamed(context, '/main');
+                    } catch (e) {
+                      if (e.toString().contains('409')) {
+                        // 409 상태 코드인 경우 경고 메시지 표시
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Error'),
+                            content: Text('해당 사용자는 이미 다른 사람과 연결되어 있습니다.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('확인'),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    // 다른 오류인 경우 일반 오류 메시지 표시
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Error'),
-                        content: Text('Failed to create couple. Please try again.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('OK'),
+                        );
+                      } else {
+                        // 다른 오류인 경우 일반 오류 메시지 표시
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Error'),
+                            content: Text('Failed to create couple. Please try again.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  }
-                }
-              },
-              child: Text('Submit'),
+                        );
+                      }
+                    }
+                  },
+                  child: Text('Submit'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: Text('Cancel'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                ),
+              ],
             ),
           ],
         ),
