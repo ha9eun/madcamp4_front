@@ -2,7 +2,7 @@
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:couple/config.dart';
+import 'package:couple/config/config.dart';
 import 'secure_storage_service.dart';
 
 class ApiService {
@@ -28,9 +28,7 @@ class ApiService {
     print('login 응답 바디: ${response.body}');
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData;
-
+      return json.decode(response.body);
     } else {
       throw Exception('Failed to login');
     }
