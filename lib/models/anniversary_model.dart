@@ -10,7 +10,7 @@ class Anniversary {
   factory Anniversary.fromJson(Map<String, dynamic> json) {
     return Anniversary(
       title: json['title'] ?? '',
-      date: DateTime.parse(json['date']).toLocal(),
+      date: DateTime.parse(json['date']),
     );
   }
 

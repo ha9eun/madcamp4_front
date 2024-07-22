@@ -31,7 +31,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               onTap: () async {
                 final DateTime? picked = await showDatePicker(
                   context: context,
-                  initialDate: _selectedDate ?? DateTime.now(),
+                  initialDate: _selectedDate ?? DateTime.now(),//local
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2101),
                 );
@@ -52,7 +52,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
                   children: [
                     Text(
                       _selectedDate != null
-                          ? "${_selectedDate!.toLocal()}".split(' ')[0]
+                          ? "${_selectedDate}".split(' ')[0]//날짜부분만
                           : 'Select Date',
                       style: TextStyle(color: Colors.black54),
                     ),
@@ -74,7 +74,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
             if (_titleController.text.isNotEmpty && _selectedDate != null) {
               try {
                 await Provider.of<CoupleViewModel>(context, listen: false)
-                    .addSchedule(_selectedDate!.toUtc(), _titleController.text);
+                    .addSchedule(_selectedDate!, _titleController.text);
                 Navigator.of(context).pop();
               } catch (e) {
                 print('Failed to add schedule: $e');

@@ -3,6 +3,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:couple/config.dart';
+import 'package:intl/intl.dart';
 import 'secure_storage_service.dart';
 
 class ApiService {
@@ -153,7 +154,7 @@ class ApiService {
       },
       body: jsonEncode(<String, dynamic>{
         'coupleId': coupleId,
-        'date': date.toIso8601String(),
+        'date':date.toIso8601String(),
         'title': title,
       }),
     );

@@ -63,7 +63,7 @@ class _EditScheduleDialogState extends State<EditScheduleDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${_selectedDate!.toLocal()}".split(' ')[0],
+                      "${_selectedDate}".split(' ')[0],
                       style: TextStyle(color: Colors.black54),
                     ),
                     Icon(Icons.calendar_today, color: Colors.grey),
@@ -84,7 +84,7 @@ class _EditScheduleDialogState extends State<EditScheduleDialog> {
             if (_titleController.text.isNotEmpty) {
               try {
                 await Provider.of<CoupleViewModel>(context, listen: false)
-                    .updateSchedule(widget.schedule.id, _selectedDate.toUtc(), _titleController.text);
+                    .updateSchedule(widget.schedule.id, _selectedDate, _titleController.text);
                 Navigator.of(context).pop();
               } catch (e) {
                 print('Failed to update schedule: $e');

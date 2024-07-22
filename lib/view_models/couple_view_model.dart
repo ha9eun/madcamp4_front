@@ -127,15 +127,17 @@ class CoupleViewModel extends ChangeNotifier {
       if (coupleId == null) {
         throw Exception('coupleId is null');
       }
-
-      final response = await apiService.addSchedule(coupleId, date, title);//date는 utc
+      DateTime utcDate = DateTime(date.year, date.month, date.day,24,0);
+      print("add schedule request body date: $utcDate");
+      final response = await apiService.addSchedule(coupleId, utcDate, title);
       String scheduleId = response['_id'];
       DateTime scheduleDate = DateTime.parse(response['date']);
+      print('add schedule response body date : $scheduleDate');
       String scheduleTitle = response['title'];
 
       Schedule newSchedule = Schedule(
         id: scheduleId,
-        date: scheduleDate.toLocal(),
+        date: scheduleDate,
         title: scheduleTitle,
       );
 
@@ -153,13 +155,14 @@ class CoupleViewModel extends ChangeNotifier {
 
     _isLoading = true;
     notifyListeners();
-
+    DateTime utcDate = DateTime(date.year, date.month, date.day, 24,0);
+    print('updateSchedule utcDate: $utcDate');
     try {
-      await apiService.updateSchedule(scheduleId, date, title);//date utc
+      await apiService.updateSchedule(scheduleId, utcDate, title);
 
       Schedule updatedSchedule = Schedule(
         id: scheduleId,
-        date: date.toLocal(),
+        date: date,
         title: title,
       );
 

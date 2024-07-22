@@ -15,8 +15,8 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
-  DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now().toLocal();
+  DateTime _focusedDay = DateTime.now().toLocal();
   List<dynamic> _selectedEvents = [];
 
   @override
