@@ -144,4 +144,27 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> addSchedule(String coupleId, DateTime date, String title) async {
+    print('addSchedule API 호출');
+    final response = await http.post(
+      Uri.parse('${Config.baseUrl}/calendar/schedule'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'coupleId': coupleId,
+        'date': date.toIso8601String(),
+        'title': title,
+      }),
+    );
+    print('addSchedule API statusCode: ${response.statusCode}');
+    print('addSchedule API response body: ${response.body}');
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add schedule');
+    }
+
+    return json.decode(response.body);
+  }
+
 }

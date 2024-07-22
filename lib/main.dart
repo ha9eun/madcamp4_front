@@ -70,7 +70,9 @@ class _AuthCheckState extends State<AuthCheck> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _checkLoginStatus();
+    });
   }
 
   Future<void> _checkLoginStatus() async {

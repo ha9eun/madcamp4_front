@@ -121,6 +121,35 @@ class CoupleViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> addSchedule(DateTime date, String title) async {
+    try {
+      String? coupleId = userViewModel.user?.coupleId;
+      if (coupleId == null) {
+        throw Exception('coupleId is null');
+      }
+      // 날짜를 UTC로 변환
+      final utcDate = date.toUtc();
+
+      final response = await apiService.addSchedule(coupleId, date, title);
+      String scheduleId = response['_id'];
+      DateTime scheduleDate = DateTime.parse(response['date']).toLocal();
+      String scheduleTitle = response['title'];
+
+      Schedule newSchedule = Schedule(
+        id: scheduleId,
+        date: scheduleDate,
+        title: scheduleTitle,
+      );
+
+      _couple?.schedules.add(newSchedule);
+      print('couple_view_model: schedule이 성공적으로 추가되었습니다.');
+      notifyListeners();
+    } catch (e) {
+      print('Failed to add schedule: $e');
+      throw e;
+    }
+  }
+
 
   void clear() {
     _couple = null;
