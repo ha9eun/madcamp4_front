@@ -15,7 +15,7 @@ class _CoupleIdInputViewState extends State<CoupleIdInputView> {
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedStartDate ?? DateTime.now().toLocal(),
+      initialDate: _selectedStartDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
@@ -49,7 +49,7 @@ class _CoupleIdInputViewState extends State<CoupleIdInputView> {
                   decoration: InputDecoration(
                     labelText: 'Start Date',
                     hintText: _selectedStartDate != null
-                        ? "${_selectedStartDate!.toLocal()}".split(' ')[0]
+                        ? "${_selectedStartDate!}".split(' ')[0]
                         : 'Select Start Date',
                   ),
                 ),
