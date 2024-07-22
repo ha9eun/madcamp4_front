@@ -53,7 +53,7 @@ class ApiService {
       throw Exception('Failed to fetch user info');
     }
   }
-  Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, String startDate) async {
+  Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, DateTime startDate) async {
     final response = await http.put(
       Uri.parse('${Config.baseUrl}/users/couple/$userId'),
       headers: <String, String>{
@@ -61,7 +61,7 @@ class ApiService {
       },
       body: jsonEncode(<String, String>{
         'partnerUsername': partnerUsername,
-        'startDate': startDate,
+        'startDate': startDate.toIso8601String(),
       }),
     );
     print('createCouple API response body: ${response.body}');
