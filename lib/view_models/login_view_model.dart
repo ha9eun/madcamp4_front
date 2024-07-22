@@ -83,11 +83,12 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createCouple(String partnerUsername, String startDate, BuildContext context) async {
+  Future<void> createCouple(String partnerUsername, DateTime startDate, BuildContext context) async {
     User? user = Provider.of<UserViewModel>(context, listen: false).user;
     if (user != null) {
       try {
-        final response = await apiService.createCouple(user.id, partnerUsername, startDate);
+        DateTime utcDate = DateTime(startDate.year, startDate.month, startDate.day, 24, 0);
+        final response = await apiService.createCouple(user.id, partnerUsername, utcDate);
 
         String coupleId = response['_id'];
 
@@ -101,9 +102,10 @@ class LoginViewModel extends ChangeNotifier {
         Provider.of<UserViewModel>(context, listen: false).debugPrintUserInfo(); // 디버깅 정보 출력
 
 
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchSchedules();
+        final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
+        await coupleViewModel.fetchCoupleInfo();
+        await coupleViewModel.fetchAnniversaries();
+        await coupleViewModel.fetchSchedules();
 
 
       } catch (e) {

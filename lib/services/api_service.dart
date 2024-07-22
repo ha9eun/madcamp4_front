@@ -2,7 +2,8 @@
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:couple/config/config.dart';
+import 'package:couple/config.dart';
+import 'package:intl/intl.dart';
 import 'secure_storage_service.dart';
 
 class ApiService {
@@ -50,7 +51,7 @@ class ApiService {
       throw Exception('Failed to fetch user info');
     }
   }
-  Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, String startDate) async {
+  Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, DateTime startDate) async {
     final response = await http.put(
       Uri.parse('${Config.baseUrl}/users/couple/$userId'),
       headers: <String, String>{
@@ -58,7 +59,7 @@ class ApiService {
       },
       body: jsonEncode(<String, String>{
         'partnerUsername': partnerUsername,
-        'startDate': startDate,
+        'startDate': startDate.toIso8601String(),
       }),
     );
     print('createCouple API response body: ${response.body}');
@@ -151,7 +152,7 @@ class ApiService {
       },
       body: jsonEncode(<String, dynamic>{
         'coupleId': coupleId,
-        'date': date.toIso8601String(),
+        'date':date.toIso8601String(),
         'title': title,
       }),
     );
@@ -163,6 +164,25 @@ class ApiService {
     }
 
     return json.decode(response.body);
+  }
+
+  Future<void> updateSchedule(String scheduleId, DateTime date, String title) async {
+    print('updateschedule API 호출');
+    final response = await http.put(
+      Uri.parse('${Config.baseUrl}/calendar/schedule/$scheduleId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'date': date.toIso8601String(),
+        'title': title,
+      }),
+    );
+    print('updateschedule statusCode: ${response.statusCode}');
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update schedule');
+    }
   }
 
 }

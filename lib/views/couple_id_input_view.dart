@@ -2,11 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
 import '../view_models/user_view_model.dart';
-import 'calendar_view.dart';
 
-class CoupleIdInputView extends StatelessWidget {
+class CoupleIdInputView extends StatefulWidget {
+  @override
+  _CoupleIdInputViewState createState() => _CoupleIdInputViewState();
+}
+
+class _CoupleIdInputViewState extends State<CoupleIdInputView> {
   final TextEditingController _partnerUsernameController = TextEditingController();
-  final TextEditingController _startDateController = TextEditingController();
+  DateTime? _selectedStartDate;
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedStartDate ?? DateTime.now().toLocal(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedStartDate) {
+      setState(() {
+        _selectedStartDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,17 +42,44 @@ class CoupleIdInputView extends StatelessWidget {
               controller: _partnerUsernameController,
               decoration: InputDecoration(labelText: 'Partner Username'),
             ),
-            TextField(
-              controller: _startDateController,
-              decoration: InputDecoration(labelText: 'Start Date (YYYY-MM-DD)'),
+            GestureDetector(
+              onTap: () => _selectStartDate(context),
+              child: AbsorbPointer(
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Start Date',
+                    hintText: _selectedStartDate != null
+                        ? "${_selectedStartDate!.toLocal()}".split(' ')[0]
+                        : 'Select Start Date',
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                if (_selectedStartDate == null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Error'),
+                      content: Text('Please select a start date.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                  return;
+                }
                 try {
                   await loginViewModel.createCouple(
                     _partnerUsernameController.text,
-                    _startDateController.text,
+                    _selectedStartDate!,
                     context,
                   );
                   // 커플 정보 생성 성공 후 메인 화면으로 이동

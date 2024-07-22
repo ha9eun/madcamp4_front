@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/schedule_model.dart';
 import '../view_models/couple_view_model.dart';
 
-class AddScheduleDialog extends StatefulWidget {
+class EditScheduleDialog extends StatefulWidget {
+  final Schedule schedule;
+
+  EditScheduleDialog({required this.schedule});
+
   @override
-  _AddScheduleDialogState createState() => _AddScheduleDialogState();
+  _EditScheduleDialogState createState() => _EditScheduleDialogState();
 }
 
-class _AddScheduleDialogState extends State<AddScheduleDialog> {
-  final TextEditingController _titleController = TextEditingController();
-  DateTime? _selectedDate;
+class _EditScheduleDialogState extends State<EditScheduleDialog> {
+  late TextEditingController _titleController;
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.schedule.title);
+    _selectedDate = widget.schedule.date;
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Schedule', style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text('Edit Schedule', style: TextStyle(fontWeight: FontWeight.bold)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -31,7 +43,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               onTap: () async {
                 final DateTime? picked = await showDatePicker(
                   context: context,
-                  initialDate: _selectedDate ?? DateTime.now(),//local
+                  initialDate: _selectedDate,
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2101),
                 );
@@ -51,9 +63,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _selectedDate != null
-                          ? "${_selectedDate}".split(' ')[0]//날짜부분만
-                          : 'Select Date',
+                      "${_selectedDate}".split(' ')[0],
                       style: TextStyle(color: Colors.black54),
                     ),
                     Icon(Icons.calendar_today, color: Colors.grey),
@@ -71,17 +81,17 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (_titleController.text.isNotEmpty && _selectedDate != null) {
+            if (_titleController.text.isNotEmpty) {
               try {
                 await Provider.of<CoupleViewModel>(context, listen: false)
-                    .addSchedule(_selectedDate!, _titleController.text);
+                    .updateSchedule(widget.schedule.id, _selectedDate, _titleController.text);
                 Navigator.of(context).pop();
               } catch (e) {
-                print('Failed to add schedule: $e');
+                print('Failed to update schedule: $e');
               }
             }
           },
-          child: Text('Add'),
+          child: Text('Update'),
         ),
       ],
     );

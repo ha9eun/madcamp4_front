@@ -83,6 +83,10 @@ class _AuthCheckState extends State<AuthCheck> {
 
     if (loginViewModel.isLoggedIn) {
       if (userViewModel.user?.coupleId != null) {
+        final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
+        await coupleViewModel.fetchCoupleInfo();
+        await coupleViewModel.fetchAnniversaries();
+        await coupleViewModel.fetchSchedules();
         Navigator.pushReplacementNamed(context, '/main');
       } else {
         Navigator.pushReplacementNamed(context, '/coupleInput');
