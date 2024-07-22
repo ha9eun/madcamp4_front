@@ -126,4 +126,22 @@ class ApiService {
     }
   }
 
+  Future<List<dynamic>> getSchedules(String coupleId) async {
+    print('getSchedules API 호출');
+    final response = await http.get(
+      Uri.parse('${Config.baseUrl}/calendar/couples/$coupleId/schedules'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print('getSchedules 응답 상태 코드: ${response.statusCode}');
+    print('getSchedules 응답 바디: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch schedules');
+    }
+  }
+
 }
