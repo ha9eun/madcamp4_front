@@ -187,4 +187,14 @@ class ApiService {
     }
   }
 
+  Future<void> deleteSchedule(String id) async {
+    final response = await http.delete(
+      Uri.parse('${Config.baseUrl}/calendar/schedule/$id')
+    );
+
+    if(response.statusCode != 200) {
+      throw Exception('Failed to delete schedule');
+    }
+  }
+
 }
