@@ -37,12 +37,8 @@ class CoupleIdInputView extends StatelessWidget {
                     _startDateController.text,
                     context,
                   );
-                  WidgetsBinding.instance?.addPostFrameCallback((_) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => CalendarView()),
-                    );
-                  });
+                  // 커플 정보 생성 성공 후 메인 화면으로 이동
+                  Navigator.pushReplacementNamed(context, '/main');
                 } catch (e) {
                   if (e.toString().contains('409')) {
                     // 409 상태 코드인 경우 경고 메시지 표시
