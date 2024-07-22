@@ -7,6 +7,8 @@ import '../view_models/user_view_model.dart';
 import '../view_models/login_view_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'add_schedule_dialog.dart';
+
 class CalendarView extends StatefulWidget {
   @override
   _CalendarViewState createState() => _CalendarViewState();
@@ -145,6 +147,13 @@ class _CalendarViewState extends State<CalendarView> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => AddScheduleDialog(),
+        ),
+        child: Icon(Icons.add),
       ),
     );
   }
