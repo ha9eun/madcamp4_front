@@ -1,67 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/secure_storage_service.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
+import '../view_models/user_view_model.dart';
+import 'couple_view_model.dart';
 
 class LoginViewModel extends ChangeNotifier {
-  final SecureStorageService _secureStorageService = SecureStorageService();
-  final ApiService _apiService = ApiService();
+  final ApiService apiService;
+  final SecureStorageService secureStorageService;
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
   bool _isLoggedIn = false;
+
+  bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
 
-  UserModel? _user;
-  UserModel? get user => _user;
+  LoginViewModel({
+    required this.apiService,
+    required this.secureStorageService,
+  });
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String username, String password, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final responseData = await _apiService.login(username, password);
-      String token = responseData['token'];
+      final response = await apiService.login(username, password);
+      String userId = response['_id'];
 
-      // 로그인 성공 시 Secure Storage에 토큰 저장
-      await _secureStorageService.writeSecureData('token', token);
+      // Secure Storage에 사용자 ID 저장
+      await secureStorageService.writeSecureData('user_id', userId);
 
-      // 사용자 데이터 생성
-      _user = UserModel(username: username, token: token);
+      // UserViewModel에 User 객체 설정
+      User user = User.fromJson(response);
+      Provider.of<UserViewModel>(context, listen: false).setUser(user);
+
       _isLoggedIn = true;
+      _isLoading = false;
+      notifyListeners();
+
+      print('로그인 성공: ${userId}');
+
+      // 로그인 후 커플 정보 로드
+      if (user.coupleId != null) {
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
+      }
+
     } catch (e) {
+      print('로그인 실패: $e');
       _isLoggedIn = false;
-      throw e;
-    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> checkLoginStatus() async {
+  Future<void> checkLoginStatus(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
-    String? token = await _secureStorageService.readSecureData('token');
-    if (token != null) {
-      // 저장된 토큰이 있는 경우 로그인 상태 유지
-      _user = UserModel(username: 'storedUser', token: token);
-      _isLoggedIn = true;
+    String? userId = await secureStorageService.readSecureData('user_id');
+    if (userId != null) {
+      // 저장된 사용자 ID가 있는 경우 사용자 정보 불러오기
+      try {
+        final response = await apiService.getUserInfo(userId);
+        User user = User.fromJson(response);
+
+        // UserViewModel에 User 객체 설정
+        Provider.of<UserViewModel>(context, listen: false).setUser(user);
+        _isLoggedIn = true;
+      } catch (e) {
+        print('사용자 정보 불러오기 실패: $e');
+        _isLoggedIn = false;
+      }
     } else {
       _isLoggedIn = false;
     }
 
-    // 빌드가 완료된 후에 notifyListeners를 호출하도록 변경
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _isLoading = false;
-      notifyListeners();
-    });
+    _isLoading = false;
+    notifyListeners();
   }
 
-  Future<void> logout() async {
-    await _secureStorageService.deleteSecureData('token');
-    _user = null;
+  Future<void> createCouple(String partnerUsername, String startDate, BuildContext context) async {
+    User? user = Provider.of<UserViewModel>(context, listen: false).user;
+    if (user != null) {
+      try {
+        final response = await apiService.createCouple(user.id, partnerUsername, startDate);
+
+        String coupleId = response['_id'];
+
+        // 기존 User 객체 업데이트
+        user = user.copyWith(coupleId: coupleId);
+        print("user coupleId: ${user.coupleId}");
+        // UserViewModel에 업데이트된 User 객체 설정
+        Provider.of<UserViewModel>(context, listen: false).setUser(user);
+
+        notifyListeners();
+        Provider.of<UserViewModel>(context, listen: false).debugPrintUserInfo(); // 디버깅 정보 출력
+
+
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
+
+
+      } catch (e) {
+        if (e.toString().contains('409')) {
+          throw Exception('409');
+        } else {
+          print('커플 생성 실패: $e');
+          throw Exception('Failed to create couple');
+        }
+      }
+    } else {
+      print('createCouple: user가 null입니다');
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    await secureStorageService.deleteSecureData('user_id');
+    Provider.of<UserViewModel>(context, listen: false).clearUser();
+    Provider.of<CoupleViewModel>(context, listen: false).clear();
     _isLoggedIn = false;
     notifyListeners();
   }

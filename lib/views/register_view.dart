@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../view_models/login_view_model.dart';
-import '../view_models/user_view_model.dart';
-import 'calendar_view.dart';
+import '../view_models/register_view_model.dart';
 import 'couple_id_input_view.dart';
-import 'register_view.dart';
+import 'login_view.dart';
 
-class LoginView extends StatelessWidget {
+class RegisterView extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<LoginViewModel>(context);
-    final userViewModel = Provider.of<UserViewModel>(context);
+    final registerViewModel = Provider.of<RegisterViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Register'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -32,39 +30,39 @@ class LoginView extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
+            TextField(
+              controller: _nicknameController,
+              decoration: InputDecoration(labelText: 'Nickname'),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await loginViewModel.login(
+                await registerViewModel.register(
+                  context,
                   _usernameController.text,
                   _passwordController.text,
-                  context,
+                  _nicknameController.text,
                 );
-                if (userViewModel.user?.coupleId != null) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => CalendarView()),
-                  );
-                } else {
+
+                // 회원가입 성공 후 커플 정보 입력 페이지로 이동
+                if (registerViewModel.isLoading == false) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => CoupleIdInputView()),
                   );
                 }
               },
-              child: Text('Login'),
+              child: Text('Register'),
             ),
-            if (loginViewModel.isLoading)
-              CircularProgressIndicator(),
             SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => RegisterView()),
+                  MaterialPageRoute(builder: (context) => LoginView()),
                 );
               },
-              child: Text('Don\'t have an account? Register here'),
+              child: Text('Back to Login'),
             ),
           ],
         ),
