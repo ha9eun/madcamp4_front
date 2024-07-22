@@ -26,6 +26,7 @@ class _CalendarViewState extends State<CalendarView> {
             onPressed: () {
               // 로그아웃 처리
               Provider.of<LoginViewModel>(context, listen: false).logout(context);
+              Navigator.pushReplacementNamed(context, '/login');
             },
           ),
         ],

@@ -40,16 +40,13 @@ class LoginView extends StatelessWidget {
                   _passwordController.text,
                   context,
                 );
-                if (userViewModel.user?.coupleId != null) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => CalendarView()),
-                  );
-                } else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => CoupleIdInputView()),
-                  );
+                if (loginViewModel.isLoggedIn) {
+                  final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+                  if (userViewModel.user?.coupleId != null) {
+                    Navigator.pushReplacementNamed(context, '/main');
+                  } else {
+                    Navigator.pushReplacementNamed(context, '/coupleInput');
+                  }
                 }
               },
               child: Text('Login'),
