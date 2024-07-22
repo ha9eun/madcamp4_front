@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/anniversary_model.dart';
+import '../models/schedule_model.dart';
 import '../services/api_service.dart';
 import '../models/couple_model.dart';
 import 'user_view_model.dart';
@@ -84,6 +85,42 @@ class CoupleViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> fetchSchedules() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      String? coupleId = userViewModel.user?.coupleId;
+      if (coupleId == null) {
+        print('coupleId is null');
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      print('Fetching schedules for coupleId: $coupleId');
+      final response = await apiService.getSchedules(coupleId);
+      List<Schedule> schedules = (response)
+          .map((item) => Schedule.fromJson(item))
+          .toList();
+
+      if (_couple != null) {
+        _couple = _couple!.copyWith(schedules: schedules);
+      } else {
+        throw Exception('_couple is null');
+      }
+
+      _isLoading = false;
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    } catch (e) {
+      print('Failed to fetch schedules: $e');
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 
   void clear() {
     _couple = null;

@@ -46,6 +46,7 @@ class LoginViewModel extends ChangeNotifier {
       if (user.coupleId != null) {
         await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
         await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchSchedules();
       }
 
     } catch (e) {
@@ -102,6 +103,7 @@ class LoginViewModel extends ChangeNotifier {
 
         await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
         await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
+        await Provider.of<CoupleViewModel>(context, listen: false).fetchSchedules();
 
 
       } catch (e) {
