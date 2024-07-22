@@ -127,17 +127,15 @@ class CoupleViewModel extends ChangeNotifier {
       if (coupleId == null) {
         throw Exception('coupleId is null');
       }
-      // 날짜를 UTC로 변환
-      final utcDate = date.toUtc();
 
-      final response = await apiService.addSchedule(coupleId, date, title);
+      final response = await apiService.addSchedule(coupleId, date, title);//date는 utc
       String scheduleId = response['_id'];
-      DateTime scheduleDate = DateTime.parse(response['date']).toLocal();
+      DateTime scheduleDate = DateTime.parse(response['date']);
       String scheduleTitle = response['title'];
 
       Schedule newSchedule = Schedule(
         id: scheduleId,
-        date: scheduleDate,
+        date: scheduleDate.toLocal(),
         title: scheduleTitle,
       );
 
@@ -146,6 +144,42 @@ class CoupleViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Failed to add schedule: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateSchedule(String scheduleId, DateTime date, String title) async {
+    if (_isLoading) return;  // 이미 호출되었으면 리턴
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await apiService.updateSchedule(scheduleId, date, title);//date utc
+
+      Schedule updatedSchedule = Schedule(
+        id: scheduleId,
+        date: date.toLocal(),
+        title: title,
+      );
+
+      if (_couple != null) {
+        List<Schedule> updatedSchedules = List.from(_couple!.schedules);
+        int index = updatedSchedules.indexWhere((schedule) => schedule.id == scheduleId);
+        if (index != -1) {
+          updatedSchedules[index] = updatedSchedule;
+          _couple = _couple!.copyWith(schedules: updatedSchedules);
+          _isLoading = false;
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            notifyListeners();
+          });
+          print('update schedule notify 완료');
+        }
+      }
+    } catch (e) {
+      print('Failed to update schedule: $e');
+      _isLoading = false;
+      notifyListeners();
       throw e;
     }
   }

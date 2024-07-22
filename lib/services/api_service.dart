@@ -167,4 +167,23 @@ class ApiService {
     return json.decode(response.body);
   }
 
+  Future<void> updateSchedule(String scheduleId, DateTime date, String title) async {
+    print('updateschedule API 호출');
+    final response = await http.put(
+      Uri.parse('${Config.baseUrl}/calendar/schedule/$scheduleId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'date': date.toIso8601String(),
+        'title': title,
+      }),
+    );
+    print('updateschedule statusCode: ${response.statusCode}');
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update schedule');
+    }
+  }
+
 }

@@ -13,7 +13,7 @@ class Schedule {
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
       id: json['_id'],
-      date: DateTime.parse(json['date']),
+      date: DateTime.parse(json['date']).toLocal(),
       title: json['title'],
     );
   }

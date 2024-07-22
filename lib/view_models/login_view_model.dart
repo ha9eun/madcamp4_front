@@ -87,7 +87,9 @@ class LoginViewModel extends ChangeNotifier {
     User? user = Provider.of<UserViewModel>(context, listen: false).user;
     if (user != null) {
       try {
-        final response = await apiService.createCouple(user.id, partnerUsername, startDate);
+        DateTime utcStartDate = DateTime.parse(startDate).toUtc();
+
+        final response = await apiService.createCouple(user.id, partnerUsername, utcStartDate.toIso8601String());
 
         String coupleId = response['_id'];
 
@@ -101,9 +103,10 @@ class LoginViewModel extends ChangeNotifier {
         Provider.of<UserViewModel>(context, listen: false).debugPrintUserInfo(); // 디버깅 정보 출력
 
 
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchCoupleInfo();
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchAnniversaries();
-        await Provider.of<CoupleViewModel>(context, listen: false).fetchSchedules();
+        final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
+        await coupleViewModel.fetchCoupleInfo();
+        await coupleViewModel.fetchAnniversaries();
+        await coupleViewModel.fetchSchedules();
 
 
       } catch (e) {
