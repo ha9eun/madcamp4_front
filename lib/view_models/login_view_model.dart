@@ -87,8 +87,7 @@ class LoginViewModel extends ChangeNotifier {
     User? user = Provider.of<UserViewModel>(context, listen: false).user;
     if (user != null) {
       try {
-        DateTime utcDate = DateTime(startDate.year, startDate.month, startDate.day, 24, 0);
-        final response = await apiService.createCouple(user.id, partnerUsername, utcDate);
+        final response = await apiService.createCouple(user.id, partnerUsername, startDate);
 
         String coupleId = response['_id'];
 

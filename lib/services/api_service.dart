@@ -52,6 +52,8 @@ class ApiService {
     }
   }
   Future<Map<String, dynamic>> createCouple(String userId, String partnerUsername, DateTime startDate) async {
+    print('createCouple startDate: $startDate');
+    print('request body: ${startDate.toUtc().toIso8601String()}');
     final response = await http.put(
       Uri.parse('${Config.baseUrl}/users/couple/$userId'),
       headers: <String, String>{
@@ -59,7 +61,7 @@ class ApiService {
       },
       body: jsonEncode(<String, String>{
         'partnerUsername': partnerUsername,
-        'startDate': startDate.toIso8601String(),
+        'startDate': startDate.toUtc().toIso8601String(),
       }),
     );
     print('createCouple API response body: ${response.body}');
