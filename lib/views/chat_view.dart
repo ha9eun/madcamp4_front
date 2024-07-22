@@ -28,14 +28,17 @@ class _ChatViewState extends State<ChatView> {
 
     if (response.statusCode == 201) {
       final Map<String, dynamic> data = jsonDecode(response.body);
+      final List<dynamic> messages = data['messages'];
       setState(() {
+
         _messages.add({
           'sender': 'You',
           'message': message,
         });
+        final aiMessage = messages.lastWhere((msg) => msg['senderType'] == 'ai' && msg['senderId'] == null);
         _messages.add({
           'sender': 'Bot',
-          'message': data['reply'],
+          'message': aiMessage['message'],
         });
       });
     } else {
