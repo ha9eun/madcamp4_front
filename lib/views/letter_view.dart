@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/letter_view_model.dart';
+import 'letter_detail_view.dart';
 
 class LetterView extends StatefulWidget {
   @override
@@ -38,7 +39,15 @@ class _LetterViewState extends State<LetterView> {
             title: Text(letter.title),
             subtitle: Text('From: $senderName\n${letter.date.toLocal()}'),
             onTap: () {
-              // 편지 내용 보기 화면으로 이동
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LetterDetailView(
+                    letter: letter,
+                    senderName: senderName,
+                  ),
+                ),
+              );
             },
           );
         },
