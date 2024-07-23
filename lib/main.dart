@@ -1,3 +1,4 @@
+import 'package:couple/view_models/letter_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
@@ -26,15 +27,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => RegisterViewModel(
-            apiService: apiService,
-            secureStorageService: secureStorageService,
-          ),
-        ),
-        ChangeNotifierProvider(
           create: (_) => LoginViewModel(
             apiService: apiService,
-            secureStorageService: secureStorageService,
+            secureStorageService: SecureStorageService(),
           ),
         ),
         ChangeNotifierProvider(
@@ -46,15 +41,27 @@ class MyApp extends StatelessWidget {
             userViewModel: Provider.of<UserViewModel>(context, listen: false),
           ),
         ),
+        ChangeNotifierProxyProvider2<UserViewModel, CoupleViewModel, LetterViewModel>(
+          create: (context) => LetterViewModel(
+            apiService: apiService,
+            userViewModel: Provider.of<UserViewModel>(context, listen: false),
+            coupleViewModel: Provider.of<CoupleViewModel>(context, listen: false),
+          ),
+          update: (context, userViewModel, coupleViewModel, letterViewModel) {
+            return LetterViewModel(
+              apiService: apiService,
+              userViewModel: userViewModel,
+              coupleViewModel: coupleViewModel,
+            );
+          },
+        ),
       ],
       child: MaterialApp(
         title: 'Couple',
-        initialRoute: '/',
+        home: AuthCheck(),
         routes: {
-          '/': (context) => AuthCheck(),
-          '/main': (context) => MainApp(),
           '/login': (context) => LoginView(),
-          '/coupleInput': (context) => CoupleIdInputView(),
+          '/main': (context) => MainApp(),
         },
       ),
     );
