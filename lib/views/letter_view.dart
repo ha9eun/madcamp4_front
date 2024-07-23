@@ -1,3 +1,4 @@
+import 'package:couple/views/write_letter_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/letter_model.dart';
@@ -48,14 +49,23 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
           : TabBarView(
         controller: _tabController,
         children: [
-          _buildLetterList(letterViewModel.receivedLetters, letterViewModel),
-          _buildLetterList(letterViewModel.sentLetters, letterViewModel),
+          _buildLetterList(letterViewModel.receivedLetters, letterViewModel, isSent: false),
+          _buildLetterList(letterViewModel.sentLetters, letterViewModel, isSent: true),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WriteLetterView()),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
 
-  Widget _buildLetterList(List<Letter?>? letters, LetterViewModel letterViewModel) {
+  Widget _buildLetterList(List<Letter?>? letters, LetterViewModel letterViewModel, {required bool isSent}) {
     if (letters == null || letters.isEmpty) {
       return Center(child: Text('No letters found'));
     }
@@ -66,23 +76,50 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
         final letter = letters[index];
         if (letter == null) return SizedBox.shrink(); // Null safety check
         final senderName = letterViewModel.getSenderName(letter.senderId);
+        final now = DateTime.now();
+        final isSentComplete = letter.date.isBefore(now);
 
         return ListTile(
           title: Text(letter.title ?? 'No Title'),
           subtitle: Text('From: $senderName\n${letter.date?.toLocal() ?? ''}'),
+          trailing: isSent
+              ? Text(isSentComplete ? '전송 완료' : '전송 전')
+              : null,
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LetterDetailView(
-                  letter: letter,
-                  senderName: senderName,
+            if (!isSent && letter.date.isAfter(now)) {
+              _showAlertDialog(context);
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LetterDetailView(
+                    letter: letter,
+                    senderName: senderName,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
         );
       },
+    );
+  }
+
+  void _showAlertDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('편지를 읽을 수 없습니다'),
+        content: Text('아직 수신 시간이 되지 않았습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('확인'),
+          ),
+        ],
+      ),
     );
   }
 }

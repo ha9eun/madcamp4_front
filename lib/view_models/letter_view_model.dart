@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../models/letter_model.dart';
 import '../services/api_service.dart';
 import 'user_view_model.dart';
 import 'couple_view_model.dart';
+import 'dart:io';
 
 class LetterViewModel extends ChangeNotifier {
   final ApiService apiService;
@@ -45,6 +48,48 @@ class LetterViewModel extends ChangeNotifier {
       return userViewModel.user?.nickname ?? 'You';
     } else {
       return coupleViewModel.couple?.partnerNickname ?? 'Partner';
+    }
+  }
+
+  Future<void> addLetter({
+    required String title,
+    required String content,
+    required DateTime date,
+    List<File>? photos,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final coupleId = userViewModel.user?.coupleId;
+      final senderId = userViewModel.user?.id;
+
+      if (coupleId != null && senderId != null) {
+        final response = await apiService.addLetter(
+          coupleId: coupleId,
+          senderId: senderId,
+          title: title,
+          content: content,
+          date: date.toUtc(),
+          photos: photos,
+        );
+
+        final newLetter = Letter(
+          id: response['_id'],
+          title: title,
+          content: content,
+          photoUrls: photos != null ? List<String>.from(response['photos']) : null,
+          date: date,
+          senderId: senderId,
+        );
+
+        sentLetters?.add(newLetter);
+      }
+    } catch (e) {
+      print('Failed to send letter: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 
