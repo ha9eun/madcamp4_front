@@ -1,3 +1,4 @@
+import 'package:couple/views/write_letter_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/letter_model.dart';
@@ -51,6 +52,15 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
           _buildLetterList(letterViewModel.receivedLetters, letterViewModel),
           _buildLetterList(letterViewModel.sentLetters, letterViewModel),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WriteLetterView()),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -1,10 +1,13 @@
 // lib/services/api_service.dart
 
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:couple/config.dart';
 import 'package:intl/intl.dart';
+import '../models/letter_model.dart';
 import 'secure_storage_service.dart';
+import 'dart:io';
 
 class ApiService {
 
@@ -214,6 +217,46 @@ class ApiService {
     if(response.statusCode != 200) {
       throw Exception('Failed to delete schedule');
 
+    }
+  }
+
+  Future<Map<String, dynamic>> addLetter({
+    required String title,
+    required String content,
+    required DateTime date,
+    required List<File>? photos,
+    required String coupleId,
+    required String senderId,
+  }) async {
+    final uri = Uri.parse('${Config.baseUrl}/letters');
+    print('coupleId: $coupleId');
+    print('senderId: $senderId');
+    print('title: $title');
+    print('date: $date');
+    print('photos $photos');
+
+    var request = http.MultipartRequest('POST', uri)
+      ..fields['coupleId'] = coupleId
+      ..fields['title'] = title
+      ..fields['content'] = content
+      ..fields['date'] = date.toIso8601String()
+      ..fields['senderId'] = senderId;
+
+    if (photos != null && photos.isNotEmpty) {
+      for (var file in photos) {
+        request.files.add(await http.MultipartFile.fromPath('photos', file.path));
+      }
+    }
+
+    var response = await request.send();
+    print('response.statusCode: ${response.statusCode}');
+    print('response.body: ${response.stream}');
+    if (response.statusCode == 201) {
+      var responseData = await http.Response.fromStream(response);
+      return jsonDecode(responseData.body);
+
+    } else {
+      throw Exception('Failed to upload letter');
     }
   }
 
