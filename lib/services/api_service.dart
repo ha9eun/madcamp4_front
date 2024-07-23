@@ -187,6 +187,7 @@ class ApiService {
     }
   }
 
+
   Future<List<dynamic>> getLetters(String coupleId) async {
     print('getLetters API 호출');
     final response = await http.get(
@@ -202,6 +203,17 @@ class ApiService {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to get letters');
+    }
+  }
+  
+  Future<void> deleteSchedule(String id) async {
+    final response = await http.delete(
+      Uri.parse('${Config.baseUrl}/calendar/schedule/$id')
+    );
+
+    if(response.statusCode != 200) {
+      throw Exception('Failed to delete schedule');
+
     }
   }
 

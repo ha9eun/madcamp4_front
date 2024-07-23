@@ -187,6 +187,22 @@ class CoupleViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteSchedule(String id) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await apiService.deleteSchedule(id);
+      _couple?.schedules.removeWhere((schedule) => schedule.id == id);
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      print('Failed to delete schedule: $e');
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void clear() {
     _couple = null;
