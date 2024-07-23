@@ -15,6 +15,7 @@ class _WriteLetterViewState extends State<WriteLetterView> {
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
   List<File> _selectedFiles = [];
 
   final ImagePicker _picker = ImagePicker();
@@ -28,18 +29,30 @@ class _WriteLetterViewState extends State<WriteLetterView> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectDateTime(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _dateController.text = DateFormat('yyyy-MM-dd').format(_selectedDate!);
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: _selectedTime ?? TimeOfDay.now(),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          _dateController.text = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
+        });
+      }
     }
   }
 
@@ -66,12 +79,12 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                 maxLines: 5,
               ),
               GestureDetector(
-                onTap: () => _selectDate(context),
+                onTap: () => _selectDateTime(context),
                 child: AbsorbPointer(
                   child: TextField(
                     controller: _dateController,
                     decoration: InputDecoration(
-                      labelText: 'Select Date',
+                      labelText: 'Select Date and Time',
                     ),
                   ),
                 ),
