@@ -318,7 +318,7 @@ class _ChatViewState extends State<ChatView> {
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       final coupleId = userViewModel.user?.coupleId;
       final senderId = userViewModel.user?.id;
-      final senderNickname = userViewModel.user?.nickname ?? 'User';
+      final senderNickname = userViewModel.user?.nickname ?? '보내는이의 닉네임 알수 없음';
 
       if (coupleId == null || senderId == null) {
         throw Exception('Invalid coupleId or senderId');
@@ -344,7 +344,7 @@ class _ChatViewState extends State<ChatView> {
             'sender': senderNickname,
             'message': message,
           });
-          final aiMessage = messages.lastWhere((msg) => msg['senderType'] == 'ai');
+          final aiMessage = messages.lastWhere((msg) => msg['senderId'] == null); // Assuming 'AI' is used for bot messages
           _messages.add({
             'sender': 'Bot',
             'message': aiMessage['message'],
@@ -369,9 +369,9 @@ class _ChatViewState extends State<ChatView> {
         throw Exception('Invalid coupleId');
       }
 
-      final myNickname = userViewModel.user?.nickname ?? 'User1';
+      final myNickname = userViewModel.user?.nickname ?? '내 닉네임 알 수 없음';
       final myId = userViewModel.user?.id;
-      final partnerNickname = coupleViewModel.couple?.partnerNickname ?? 'User2';
+      final partnerNickname = coupleViewModel.couple?.partnerNickname ?? '파트너 닉네임 알 수 없음';
 
       final response = await http.get(
         Uri.parse('${Config.baseUrl}/chat/$coupleId'),
@@ -384,7 +384,7 @@ class _ChatViewState extends State<ChatView> {
             String sender;
             if (message['senderId'] == myId) {
               sender = myNickname;
-            } else if (message['senderType'] == 'ai') {
+            } else if (message['senderId'] == null) {
               sender = 'Bot';
             } else {
               sender = partnerNickname;

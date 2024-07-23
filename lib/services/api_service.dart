@@ -2,7 +2,7 @@
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:couple/config.dart';
+import 'package:couple/config/config.dart';
 import 'package:intl/intl.dart';
 import 'secure_storage_service.dart';
 
