@@ -9,11 +9,9 @@ class LetterViewModel extends ChangeNotifier {
   final UserViewModel userViewModel;
   final CoupleViewModel coupleViewModel;
 
-  List<Letter>? _letters = [];
-  bool _isLoading = false;
-
-  List<Letter>? get letters => _letters;
-  bool get isLoading => _isLoading;
+  bool isLoading = false;
+  List<Letter>? receivedLetters = [];
+  List<Letter>? sentLetters = [];
 
   LetterViewModel({
     required this.apiService,
@@ -22,35 +20,38 @@ class LetterViewModel extends ChangeNotifier {
   });
 
   Future<void> fetchLetters() async {
-    _isLoading = true;
+    isLoading = true;
     notifyListeners();
 
     try {
-      String? coupleId = userViewModel.user?.coupleId;
-      if (coupleId == null) {
-        throw Exception('coupleId is null');
+      final coupleId = userViewModel.user?.coupleId;
+      if (coupleId != null) {
+        final response = await apiService.getLetters(coupleId);
+
+        List<Letter> allLetters = response.map<Letter>((json) => Letter.fromJson(json)).toList();
+        receivedLetters = allLetters.where((letter) => letter.senderId != userViewModel.user!.id).toList();
+        sentLetters = allLetters.where((letter) => letter.senderId == userViewModel.user!.id).toList();
       }
-      final response = await apiService.getLetters(coupleId);
-      _letters = (response as List).map((item) => Letter.fromJson(item)).toList();
-      _isLoading = false;
-      notifyListeners();
     } catch (e) {
       print('Failed to fetch letters: $e');
-      _isLoading = false;
+    } finally {
+      isLoading = false;
       notifyListeners();
     }
   }
 
   String getSenderName(String senderId) {
-    return senderId == userViewModel.user?.id
-        ? '나'
-        : coupleViewModel.couple?.partnerNickname ?? '상대방';
+    if (senderId == userViewModel.user?.id) {
+      return userViewModel.user?.nickname ?? 'You';
+    } else {
+      return coupleViewModel.couple?.partnerNickname ?? 'Partner';
+    }
   }
 
   void clear() {
-    _letters = null;
-    _isLoading = false;
+    receivedLetters = null;
+    sentLetters = null;
+    isLoading = false;
     notifyListeners();
-
   }
 }
