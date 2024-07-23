@@ -223,7 +223,7 @@ class ApiService {
 
   // Mission APIs
 
-  Future<Map<String, dynamic>> createMission(String coupleId, String title, DateTime date) async {
+  Future<Map<String, dynamic>> createMission(String coupleId, String mission, DateTime date) async {
     final response = await http.post(
       Uri.parse('${Config.baseUrl}/missions'),
       headers: <String, String>{
@@ -231,15 +231,16 @@ class ApiService {
       },
       body: jsonEncode(<String, dynamic>{
         'coupleId': coupleId,
-        'title': title,
+        'mission': mission,
         'date': date.toIso8601String(),
       }),
     );
-
+    print('Response status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
     if (response.statusCode == 201) {
       return json.decode(response.body);
     } else {
-      throw Exception('Failed to create mission');
+      throw Exception('Failed to create mission!!');
     }
   }
 

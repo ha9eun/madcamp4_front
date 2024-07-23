@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../config/config.dart';
 import '../view_models/user_view_model.dart';
 import '../view_models/couple_view_model.dart';
 import 'chat_modal.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ChatView extends StatefulWidget {
   @override
@@ -21,7 +21,7 @@ class _ChatViewState extends State<ChatView> {
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       final coupleId = userViewModel.user?.coupleId;
       final senderId = userViewModel.user?.id;
-      final senderNickname = userViewModel.user?.nickname ?? '보내는이의 닉네임 알수 없음';
+      final senderNickname = userViewModel.user?.nickname ?? 'User';
 
       if (coupleId == null || senderId == null) {
         throw Exception('Invalid coupleId or senderId');
@@ -47,7 +47,7 @@ class _ChatViewState extends State<ChatView> {
             'sender': senderNickname,
             'message': message,
           });
-          final aiMessage = messages.lastWhere((msg) => msg['senderId'] == null); // Assuming 'AI' is used for bot messages
+          final aiMessage = messages.lastWhere((msg) => msg['senderId'] == null);
           _messages.add({
             'sender': 'Bot',
             'message': aiMessage['message'],
@@ -72,9 +72,9 @@ class _ChatViewState extends State<ChatView> {
         throw Exception('Invalid coupleId');
       }
 
-      final myNickname = userViewModel.user?.nickname ?? '내 닉네임 알 수 없음';
+      final myNickname = userViewModel.user?.nickname ?? 'User1';
       final myId = userViewModel.user?.id;
-      final partnerNickname = coupleViewModel.couple?.partnerNickname ?? '파트너 닉네임 알 수 없음';
+      final partnerNickname = coupleViewModel.couple?.partnerNickname ?? 'User2';
 
       final response = await http.get(
         Uri.parse('${Config.baseUrl}/chat/$coupleId'),
@@ -135,20 +135,16 @@ class _ChatViewState extends State<ChatView> {
                 return GestureDetector(
                   onLongPress: message['sender'] == 'Bot'
                       ? () {
-                    showMenu(
+                    showModalBottomSheet(
                       context: context,
-                      position: RelativeRect.fromLTRB(100, 100, 100, 100),
-                      items: [
-                        PopupMenuItem(
-                          value: 'add_mission',
-                          child: Text('미션리스트에 추가'),
-                        ),
-                      ],
-                    ).then((value) {
-                      if (value == 'add_mission') {
-                        ChatModal.showMissionModal(context, message['message']);
-                      }
-                    });
+                      builder: (BuildContext context) {
+                        return Builder(
+                          builder: (BuildContext newcontext) {
+                            return ChatModal.showMissionModal(newcontext, message['message']);
+                          }
+                        );
+                      },
+                    );
                   }
                       : null,
                   child: Container(

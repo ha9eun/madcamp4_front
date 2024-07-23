@@ -1,8 +1,52 @@
 import 'package:flutter/material.dart';
-import '../models/mission_model.dart';
 import '../services/api_service.dart';
 import 'user_view_model.dart';
 import 'couple_view_model.dart';
+import 'dart:io';
+
+class Mission {
+  final String id;
+  final String coupleId;
+  final String mission;
+  final DateTime date;
+  final List<String>? photos;
+  final String? aiComment;
+  final String? diary;
+
+  Mission({
+    required this.id,
+    required this.coupleId,
+    required this.mission,
+    required this.date,
+    this.photos,
+    this.aiComment,
+    this.diary,
+  });
+
+  factory Mission.fromJson(Map<String, dynamic> json) {
+    return Mission(
+      id: json['_id'],
+      coupleId: json['coupleId'],
+      mission: json['mission'],
+      date: DateTime.parse(json['date']),
+      photos: json['photos'] != null ? List<String>.from(json['photos']) : null,
+      aiComment: json['aiComment'],
+      diary: json['diary'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'coupleId': coupleId,
+      'mission': mission,
+      'date': date,
+      'photos': photos,
+      'aiComment': aiComment,
+      'diary': diary,
+    };
+  }
+}
 
 class MissionViewModel extends ChangeNotifier {
   final ApiService apiService;
@@ -62,7 +106,7 @@ class MissionViewModel extends ChangeNotifier {
       await apiService.updateMission(id, title, date);
       await fetchMissions(); // Refresh the mission list after updating a mission
     } catch (e) {
-      print('Failed to update mission: $e');
+      print('Failed to update mission~~: $e');
     } finally {
       isLoading = false;
       notifyListeners();
