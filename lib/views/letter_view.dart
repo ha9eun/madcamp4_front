@@ -76,23 +76,46 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
         final letter = letters[index];
         if (letter == null) return SizedBox.shrink(); // Null safety check
         final senderName = letterViewModel.getSenderName(letter.senderId);
+        final now = DateTime.now();
 
         return ListTile(
           title: Text(letter.title ?? 'No Title'),
           subtitle: Text('From: $senderName\n${letter.date?.toLocal() ?? ''}'),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LetterDetailView(
-                  letter: letter,
-                  senderName: senderName,
+            if (letter.date.isBefore(now)) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LetterDetailView(
+                    letter: letter,
+                    senderName: senderName,
+                  ),
                 ),
-              ),
-            );
+              );
+            } else {
+              _showAlertDialog(context);
+            }
           },
         );
       },
+    );
+  }
+
+  void _showAlertDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('편지를 읽을 수 없습니다'),
+        content: Text('아직 수신 시간이 되지 않았습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('확인'),
+          ),
+        ],
+      ),
     );
   }
 }
