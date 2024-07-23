@@ -187,7 +187,7 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getLetters(String coupleId) async {
+  Future<List<dynamic>> getLetters(String coupleId) async {
     print('getLetters API 호출');
     final response = await http.get(
       Uri.parse('${Config.baseUrl}/letters/couple/$coupleId'),

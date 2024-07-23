@@ -1,3 +1,4 @@
+import 'package:couple/view_models/letter_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/secure_storage_service.dart';
@@ -124,6 +125,7 @@ class LoginViewModel extends ChangeNotifier {
     await secureStorageService.deleteSecureData('user_id');
     Provider.of<UserViewModel>(context, listen: false).clearUser();
     Provider.of<CoupleViewModel>(context, listen: false).clear();
+    Provider.of<LetterViewModel>(context, listen: false).clear();
     _isLoggedIn = false;
     notifyListeners();
   }
