@@ -220,6 +220,89 @@ class ApiService {
     }
   }
 
+
+  // Mission APIs
+
+  Future<Map<String, dynamic>> createMission(String coupleId, String title, DateTime date) async {
+    final response = await http.post(
+      Uri.parse('${Config.baseUrl}/missions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'coupleId': coupleId,
+        'title': title,
+        'date': date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to create mission');
+    }
+  }
+
+  Future<List<dynamic>> getMissions(String coupleId) async {
+    final response = await http.get(
+      Uri.parse('${Config.baseUrl}/missions/$coupleId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch missions');
+    }
+  }
+
+  Future<Map<String, dynamic>> getMissionById(String id) async {
+    final response = await http.get(
+      Uri.parse('${Config.baseUrl}/missions/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch mission');
+    }
+  }
+
+  Future<void> updateMission(String id, String title, DateTime date) async {
+    final response = await http.patch(
+      Uri.parse('${Config.baseUrl}/missions/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'title': title,
+        'date': date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update mission');
+    }
+  }
+
+  Future<void> deleteMission(String id) async {
+    final response = await http.delete(
+      Uri.parse('${Config.baseUrl}/missions/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete mission');
+    }
+  }
+
   Future<Map<String, dynamic>> addLetter({
     required String title,
     required String content,
@@ -259,5 +342,6 @@ class ApiService {
       throw Exception('Failed to upload letter');
     }
   }
+
 
 }

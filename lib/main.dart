@@ -7,6 +7,7 @@ import 'view_models/login_view_model.dart';
 import 'view_models/register_view_model.dart';
 import 'view_models/user_view_model.dart';
 import 'view_models/couple_view_model.dart';
+import 'view_models/mission_view_model.dart';
 import 'views/calendar_view.dart';
 import 'views/login_view.dart';
 import 'views/couple_id_input_view.dart';
@@ -45,6 +46,13 @@ class MyApp extends StatelessWidget {
           create: (context) => CoupleViewModel(
             apiService: apiService,
             userViewModel: Provider.of<UserViewModel>(context, listen: false),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MissionViewModel(
+            apiService: Provider.of<ApiService>(context, listen: false),
+            userViewModel: Provider.of<UserViewModel>(context, listen: false),
+            coupleViewModel: Provider.of<CoupleViewModel>(context, listen: false),
           ),
         ),
         ChangeNotifierProxyProvider2<UserViewModel, CoupleViewModel, LetterViewModel>(
