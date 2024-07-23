@@ -27,9 +27,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => RegisterViewModel(
+            apiService: apiService,
+            secureStorageService: secureStorageService,
+          ),
+        ),
+        ChangeNotifierProvider(
           create: (_) => LoginViewModel(
             apiService: apiService,
-            secureStorageService: SecureStorageService(),
+            secureStorageService: secureStorageService,
           ),
         ),
         ChangeNotifierProvider(
@@ -58,10 +64,12 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Couple',
-        home: AuthCheck(),
+        initialRoute: '/',
         routes: {
-          '/login': (context) => LoginView(),
+          '/': (context) => AuthCheck(),
           '/main': (context) => MainApp(),
+          '/login': (context) => LoginView(),
+          '/coupleInput': (context) => CoupleIdInputView(),
         },
       ),
     );
