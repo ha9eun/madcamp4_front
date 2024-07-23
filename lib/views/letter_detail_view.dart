@@ -13,7 +13,7 @@ class LetterDetailView extends StatelessWidget {
       appBar: AppBar(
         title: Text(letter.title ?? 'No Title'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,9 +34,36 @@ class LetterDetailView extends StatelessWidget {
             ),
             SizedBox(height: 16),
             if (letter.photoUrls != null && letter.photoUrls!.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: letter.photoUrls!.map((url) => Image.network(url)).toList(),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: letter.photoUrls!.map((url) {
+                  return GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(url),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Image.network(
+                      url,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }).toList(),
               ),
           ],
         ),

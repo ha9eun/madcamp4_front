@@ -13,6 +13,7 @@ class WriteLetterView extends StatefulWidget {
 class _WriteLetterViewState extends State<WriteLetterView> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   DateTime? _selectedDate;
   List<File> _selectedFiles = [];
 
@@ -37,6 +38,7 @@ class _WriteLetterViewState extends State<WriteLetterView> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(_selectedDate!);
       });
     }
   }
@@ -67,11 +69,9 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                 onTap: () => _selectDate(context),
                 child: AbsorbPointer(
                   child: TextField(
+                    controller: _dateController,
                     decoration: InputDecoration(
                       labelText: 'Select Date',
-                      hintText: _selectedDate != null
-                          ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
-                          : 'Select Date',
                     ),
                   ),
                 ),
@@ -80,6 +80,19 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                 onPressed: _pickImage,
                 child: Text('Select Image'),
               ),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: _selectedFiles.map((file) {
+                  return Image.file(
+                    file,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_titleController.text.isNotEmpty &&
