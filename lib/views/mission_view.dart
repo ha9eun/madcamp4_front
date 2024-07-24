@@ -3,7 +3,8 @@ import '../models/mission_model.dart';
 import 'package:provider/provider.dart';
 import '../view_models/mission_view_model.dart';
 import 'package:intl/intl.dart';
-import 'mission_edit_modal.dart';
+import 'complete_mission_view.dart';
+import 'mission_detail_view.dart';
 
 class MissionView extends StatefulWidget {
   @override
@@ -41,17 +42,14 @@ class _MissionViewState extends State<MissionView> {
               final mission = viewModel.missions![index];
               return MissionCard(
                 mission: mission,
-                onEdit: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => MissionEditModal(
-                      missionId: mission.id,
-                      currentTitle: mission.mission,
-                      viewModel: viewModel,
+                onComplete: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CompleteMissionView(missionId: mission.id),
                     ),
                   );
                 },
-                onDelete: () => viewModel.deleteMission(mission.id),
               );
             },
           );
@@ -63,52 +61,55 @@ class _MissionViewState extends State<MissionView> {
 
 class MissionCard extends StatelessWidget {
   final Mission mission;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback onComplete;
 
   const MissionCard({
     Key? key,
     required this.mission,
-    required this.onEdit,
-    required this.onDelete,
+    required this.onComplete,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              mission.mission,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Date: ${DateFormat('yyyy-MM-dd').format(mission.date.toLocal())}',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: onEdit,
-                  child: Text('Edit'),
+    return GestureDetector(
+      onTap: mission.diary != null
+          ? () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MissionDetailView(mission: mission),
+          ),
+        );
+      }
+          : null,
+      child: Card(
+        margin: EdgeInsets.all(8.0),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                mission.mission,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                TextButton(
-                  onPressed: onDelete,
-                  child: Text('Delete'),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                'Date: ${DateFormat('yyyy-MM-dd').format(mission.date.toLocal())}',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              if (mission.diary == null) ...[
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: onComplete,
+                  child: Text('Complete Mission'),
                 ),
               ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

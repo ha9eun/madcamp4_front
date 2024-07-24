@@ -85,6 +85,50 @@ class MissionViewModel extends ChangeNotifier {
     }
   }
 
+
+
+  Future<void> completeMission({
+    required String missionId,
+    required String diary,
+    required List<File> photos,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      Mission? mission = missions?.firstWhere((m) => m.id == missionId);
+      if (mission != null) {
+        await apiService.updateMissionDiary(
+          missionId: missionId,
+          coupleId: mission.coupleId,
+          date: mission.date,
+          mission: mission.mission,
+          diary: diary,
+        );
+        final response = await apiService.uploadMissionPhotos(missionId, photos);
+
+
+        final updatedMission = Mission(
+          id: missionId,
+          coupleId: mission.coupleId,
+          mission: mission.mission,
+          date: mission.date.toLocal(),
+          photos: List<String>.from(response['photos']),
+          diary: diary,
+        );
+        final index = missions!.indexWhere((mission) => mission.id == missionId);
+        if (index != -1) {
+          missions![index] = updatedMission;
+        }
+      }
+    } catch (e) {
+      print('Failed to complete mission: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void clear() {
     missions = null;
     isLoading = false;
