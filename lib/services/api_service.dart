@@ -406,4 +406,46 @@ class ApiService {
     }
   }
 
+  Future<void> updateMissionDiary({
+    required String missionId,
+    required String coupleId,
+    required DateTime date,
+    required String mission,
+    required String diary,
+  }) async {
+    final response = await http.put(
+      Uri.parse('${Config.baseUrl}/missions/$missionId/content'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'coupleId': coupleId,
+        'date': date.toIso8601String(),
+        'mission': mission,
+        'diary': diary,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update mission diary');
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadMissionPhotos(String missionId, List<File> photos) async {
+    final uri = Uri.parse('${Config.baseUrl}/missions/$missionId/images');
+
+    var request = http.MultipartRequest('POST', uri);
+
+    for (var file in photos) {
+      request.files.add(await http.MultipartFile.fromPath('photos', file.path));
+    }
+
+    var response = await request.send();
+
+    if (response.statusCode == 201) {
+      var responseData = await http.Response.fromStream(response);
+      return jsonDecode(responseData.body);
+    } else {
+      throw Exception('Failed to upload mission photos');
+    }
+  }
+
 }
