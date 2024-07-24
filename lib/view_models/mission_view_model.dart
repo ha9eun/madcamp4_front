@@ -3,50 +3,7 @@ import '../services/api_service.dart';
 import 'user_view_model.dart';
 import 'couple_view_model.dart';
 import 'dart:io';
-
-class Mission {
-  final String id;
-  final String coupleId;
-  final String mission;
-  final DateTime date;
-  final List<String>? photos;
-  final String? aiComment;
-  final String? diary;
-
-  Mission({
-    required this.id,
-    required this.coupleId,
-    required this.mission,
-    required this.date,
-    this.photos,
-    this.aiComment,
-    this.diary,
-  });
-
-  factory Mission.fromJson(Map<String, dynamic> json) {
-    return Mission(
-      id: json['_id'],
-      coupleId: json['coupleId'],
-      mission: json['mission'],
-      date: DateTime.parse(json['date']),
-      photos: json['photos'] != null ? List<String>.from(json['photos']) : null,
-      aiComment: json['aiComment'],
-      diary: json['diary'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'coupleId': coupleId,
-      'mission': mission,
-      'date': date,
-      'photos': photos,
-      'aiComment': aiComment,
-      'diary': diary,
-    };
-  }
-}
+import '../models/mission_model.dart';
 
 class MissionViewModel extends ChangeNotifier {
   final ApiService apiService;
@@ -80,14 +37,14 @@ class MissionViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addMission(String title, DateTime date) async {
+  Future<void> addMission(String mission, DateTime date) async {
     isLoading = true;
     notifyListeners();
 
     try {
       final coupleId = userViewModel.user?.coupleId;
       if (coupleId != null) {
-        await apiService.createMission(coupleId, title, date);
+        await apiService.createMission(coupleId, mission, date);
         await fetchMissions(); // Refresh the mission list after adding a new mission
       }
     } catch (e) {
@@ -98,12 +55,12 @@ class MissionViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateMission(String id, String title, DateTime date) async {
+  Future<void> updateMission(String id, String mission, DateTime date) async {
     isLoading = true;
     notifyListeners();
 
     try {
-      await apiService.updateMission(id, title, date);
+      await apiService.updateMission(id, mission, date);
       await fetchMissions(); // Refresh the mission list after updating a mission
     } catch (e) {
       print('Failed to update mission~~: $e');
