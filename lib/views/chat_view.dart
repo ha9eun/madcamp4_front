@@ -126,6 +126,79 @@ class _ChatViewState extends State<ChatView> {
       appBar: AppBar(
         title: Text('$myNickname and $partnerNickname\'s Chat'),
       ),
+      // body: Column(
+      //   children: [
+      //     Expanded(
+      //       child: ListView.builder(
+      //         itemCount: _messages.length,
+      //         itemBuilder: (context, index) {
+      //           final message = _messages[index];
+      //           final isMe = message['sender'] == myNickname;
+      //           return GestureDetector(
+      //             onLongPress: message['sender'] == 'Bot'
+      //                 ? () {
+      //               showModalBottomSheet(
+      //                 context: context,
+      //                 builder: (BuildContext context) {
+      //                   return Builder(
+      //                     builder: (BuildContext newcontext) {
+      //                       return ChatModal.showMissionModal(newcontext, message['message']);
+      //                     }
+      //                   );
+      //                 },
+      //               );
+      //             }
+      //                 : null,
+      //             child: Container(
+      //               margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      //               child: Row(
+      //                 mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      //                 children: [
+      //                   if (!isMe)
+      //                     CircleAvatar(
+      //                       child: Text(message['sender'][0]),
+      //                     ),
+      //                   SizedBox(width: 10),
+      //                   Container(
+      //                     padding: EdgeInsets.all(10.0),
+      //                     constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+      //                     decoration: BoxDecoration(
+      //                       color: isMe ? Colors.blue : Colors.grey[300],
+      //                       borderRadius: BorderRadius.circular(15.0),
+      //                     ),
+      //                     child: Column(
+      //                       crossAxisAlignment: CrossAxisAlignment.start,
+      //                       children: [
+      //                         Text(
+      //                           message['sender'],
+      //                           style: TextStyle(
+      //                             fontWeight: FontWeight.bold,
+      //                             color: isMe ? Colors.white : Colors.black,
+      //                           ),
+      //                         ),
+      //                         SizedBox(height: 5.0),
+      //                         Text(
+      //                           message['message'],
+      //                           style: TextStyle(
+      //                             color: isMe ? Colors.white : Colors.black,
+      //                           ),
+      //                         ),
+      //                       ],
+      //                     ),
+      //                   ),
+      //                   if (isMe)
+      //                     SizedBox(width: 10),
+      //                   if (isMe)
+      //                     CircleAvatar(
+      //                       child: Text(message['sender'][0]),
+      //                     ),
+      //                 ],
+      //               ),
+      //             ),
+      //           );
+      //         },
+      //       ),
+      //     ),
       body: Column(
         children: [
           Expanded(
@@ -134,66 +207,59 @@ class _ChatViewState extends State<ChatView> {
               itemBuilder: (context, index) {
                 final message = _messages[index];
                 final isMe = message['sender'] == myNickname;
-                return GestureDetector(
-                  onLongPress: message['sender'] == 'Bot'
-                      ? () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Builder(
-                          builder: (BuildContext newcontext) {
-                            return ChatModal.showMissionModal(newcontext, message['message']);
-                          }
-                        );
-                      },
-                    );
-                  }
-                      : null,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                    child: Row(
-                      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                      children: [
-                        if (!isMe)
-                          CircleAvatar(
-                            child: Text(message['sender'][0]),
-                          ),
-                        SizedBox(width: 10),
-                        Container(
-                          padding: EdgeInsets.all(10.0),
-                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                          decoration: BoxDecoration(
-                            color: isMe ? Colors.blue : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                message['sender'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: isMe ? Colors.white : Colors.black,
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Text(
-                                message['message'],
-                                style: TextStyle(
-                                  color: isMe ? Colors.white : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  child: Row(
+                    mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                    children: [
+                      if (!isMe)
+                        CircleAvatar(
+                          child: Text(message['sender'][0]),
                         ),
-                        if (isMe)
-                          SizedBox(width: 10),
-                        if (isMe)
-                          CircleAvatar(
-                            child: Text(message['sender'][0]),
-                          ),
-                      ],
-                    ),
+                      SizedBox(width: 10),
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                        decoration: BoxDecoration(
+                          color: isMe ? Colors.blue : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message['sender'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isMe ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 5.0),
+                            SelectableText(
+                              message['message'],
+                              style: TextStyle(
+                                color: isMe ? Colors.white : Colors.black,
+                              ),
+                              onSelectionChanged: (selection, cause) {
+                                // Selection가 유효한지 확인
+                                if (selection.start >= 0 && selection.end <= message['message'].length) {
+                                  final selectedText = message['message'].substring(selection.start, selection.end).trim();
+                                  if (selectedText.isNotEmpty) {
+                                    _showPopupMenu(context, selectedText, Offset.zero);
+                                  }
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isMe)
+                        SizedBox(width: 10),
+                      if (isMe)
+                        CircleAvatar(
+                          child: Text(message['sender'][0]),
+                        ),
+                    ],
                   ),
                 );
               },
@@ -281,6 +347,32 @@ class _ChatViewState extends State<ChatView> {
         'sender': 'Bot',
         'message': initialMessage,
       });
+    });
+  }
+  void _showPopupMenu(BuildContext context, String selectedText, Offset position) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        Rect.fromPoints(position, position),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem(
+          value: 'add_mission',
+          child: Text('미션추가'),
+        ),
+        PopupMenuItem(
+          value: 'cancel',
+          child: Text('취소'),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'add_mission') {
+        print('Add Mission selected'); // For debugging
+        ChatModal.showMissionModal(context, selectedText);
+      }
     });
   }
 }
