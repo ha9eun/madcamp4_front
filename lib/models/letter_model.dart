@@ -1,3 +1,4 @@
+// lib/models/letter_model.dart
 class Letter {
   final String id;
   final String title;
