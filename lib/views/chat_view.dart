@@ -15,6 +15,7 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> _messages = [];
+  String? _selectedTopic;
 
   Future<void> _sendMessage(String message) async {
     try {
@@ -36,6 +37,7 @@ class _ChatViewState extends State<ChatView> {
           'coupleId': coupleId,
           'senderId': senderId,
           'message': message,
+          'topic': _selectedTopic ?? '',
         }),
       );
 
@@ -197,6 +199,22 @@ class _ChatViewState extends State<ChatView> {
               },
             ),
           ),
+          // Buttons for topic selection
+          Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildTopicButton('대화주제', 'conversation'),
+                SizedBox(width: 1),
+                _buildTopicButton('데이트코스', 'date'),
+                SizedBox(width: 1),
+                _buildTopicButton('활동', 'activity'),
+                SizedBox(width: 1),
+                _buildTopicButton('싸움', 'fight'),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -223,4 +241,15 @@ class _ChatViewState extends State<ChatView> {
       ),
     );
   }
+  Widget _buildTopicButton(String label, String topic) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _selectedTopic = topic;
+        });
+      },
+      child: Text(label),
+    );
+  }
+
 }
