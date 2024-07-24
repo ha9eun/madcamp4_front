@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Couple',
+        title: 'LoveLog',
         home: SplashScreen(),
         routes: {
           '/auth_check': (context) => AuthCheck(),
