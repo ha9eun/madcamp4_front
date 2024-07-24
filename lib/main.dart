@@ -48,13 +48,6 @@ class MyApp extends StatelessWidget {
             userViewModel: Provider.of<UserViewModel>(context, listen: false),
           ),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => MissionViewModel(
-        //     apiService: Provider.of<ApiService>(context, listen: false),
-        //     userViewModel: Provider.of<UserViewModel>(context, listen: false),
-        //     coupleViewModel: Provider.of<CoupleViewModel>(context, listen: false),
-        //   ),
-        // ),
         ChangeNotifierProxyProvider2<UserViewModel, CoupleViewModel, MissionViewModel>(
           create: (context) => MissionViewModel(
             apiService: apiService,
