@@ -344,35 +344,66 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> updateLetter({
+  // 편지 텍스트 수정 API 호출
+  Future<void> updateLetter({
     required String id,
     required String title,
     required String content,
     required DateTime date,
-    List<File>? photos,
   }) async {
-    final uri = Uri.parse('${Config.baseUrl}/letters/$id');
-
-    var request = http.MultipartRequest('PUT', uri)
-      ..fields['title'] = title
-      ..fields['content'] = content
-      ..fields['date'] = date.toIso8601String();
-
-    if (photos != null) {
-      for (var file in photos) {
-        request.files.add(await http.MultipartFile.fromPath('photos', file.path));
-      }
-    }
-
-    var response = await request.send();
-    print('updateLetter API statusCode: ${response.statusCode}');
-    if (response.statusCode == 200) {
-      var responseData = await http.Response.fromStream(response);
-      return jsonDecode(responseData.body);
-    } else {
+    final response = await http.put(
+      Uri.parse('${Config.baseUrl}/letters/$id/content'),
+      headers:  <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'title': title,
+        'content': content,
+        'date': date.toIso8601String(),
+      }),
+    );
+    print('편지 텍스트 수정 API 상태 코드: ${response.statusCode}');
+    if (response.statusCode != 200) {
       throw Exception('Failed to update letter');
     }
   }
 
+  // 사진 삭제 API 호출
+  Future<void> deletePhoto(String id, String url) async {
+    final response = await http.delete(
+      Uri.parse('${Config.baseUrl}/letters/$id/images?img-url=$url'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print('사진 삭제 API 상태 코드: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete photo');
+    }
+  }
+
+  // 사진 추가 API 호출
+  Future<Map<String, dynamic>> uploadPhoto(String id, List<File> photos) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${Config.baseUrl}/letters/$id/images'),
+    );
+
+
+    for (var file in photos) {
+      request.files.add(
+          await http.MultipartFile.fromPath('photos', file.path));
+    }
+
+
+    final response = await request.send();
+    print('사진 추가 API 상태 코드: ${response.statusCode}');
+    if (response.statusCode == 201) {
+      var responseData = await http.Response.fromStream(response);
+      return jsonDecode(responseData.body);
+    } else {
+      throw Exception('Failed to upload photo');
+    }
+  }
 
 }

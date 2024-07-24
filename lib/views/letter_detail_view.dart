@@ -1,3 +1,4 @@
+// lib/views/letter_detail_view.dart
 import 'package:flutter/material.dart';
 import '../models/letter_model.dart';
 import 'write_letter_view.dart';

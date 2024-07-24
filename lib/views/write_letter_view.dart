@@ -29,11 +29,11 @@ class _WriteLetterViewState extends State<WriteLetterView> {
   void initState() {
     super.initState();
     if (widget.letter != null) {
-      _titleController.text = widget.letter!.title ?? '';
-      _contentController.text = widget.letter!.content ?? '';
+      _titleController.text = widget.letter!.title;
+      _contentController.text = widget.letter!.content;
       _selectedDate = widget.letter!.date;
       _dateController.text = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
-      _existingPhotos = widget.letter!.photoUrls ?? [];
+      _existingPhotos = List<String>.from(widget.letter!.photoUrls ?? []);
     }
   }
 
@@ -193,7 +193,8 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                         title: _titleController.text,
                         content: _contentController.text,
                         date: _selectedDate!,
-                        photos: _selectedFiles,
+                        newPhotos: _selectedFiles,
+                        existingPhotoUrls: _existingPhotos,
                       );
                     }
                     Navigator.pop(context);
