@@ -93,6 +93,49 @@ class LetterViewModel extends ChangeNotifier {
     }
   }
 
+
+
+  Future<void> updateLetter({
+    required String id,
+    required String title,
+    required String content,
+    required DateTime date,
+    List<File>? photos,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+    print('updateLetter viewmodel id: $id, title: $title. content:$content, date:$date, photos: $photos');
+    try {
+      final response = await apiService.updateLetter(
+        id: id,
+        title: title,
+        content: content,
+        date: date,
+        photos: photos,
+      );
+      print(response.values);
+      // Update the letter in the list
+      int index = sentLetters?.indexWhere((letter) => letter.id == id) ?? -1;
+      print('index: $index');
+      if (index != -1) {
+        sentLetters?[index] = Letter(
+          id: id,
+          title: title,
+          content: content,
+          photoUrls: photos != null ? List<String>.from(response['photos']) : null,
+          date: date.toUtc(),
+          senderId: userViewModel.user!.id,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Failed to update letter: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void clear() {
     receivedLetters = null;
     sentLetters = null;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/letter_model.dart';
+import 'write_letter_view.dart';
 
 class LetterDetailView extends StatelessWidget {
   final Letter letter;
@@ -9,9 +10,26 @@ class LetterDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final canEdit = letter.date.isAfter(now);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(letter.title ?? 'No Title'),
+        actions: [
+          if (canEdit)
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WriteLetterView(letter: letter),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

@@ -3,7 +3,7 @@
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:couple/config/config.dart';
+import 'package:couple/config.dart';
 import 'package:intl/intl.dart';
 import '../models/letter_model.dart';
 import 'secure_storage_service.dart';
@@ -341,6 +341,36 @@ class ApiService {
 
     } else {
       throw Exception('Failed to upload letter');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateLetter({
+    required String id,
+    required String title,
+    required String content,
+    required DateTime date,
+    List<File>? photos,
+  }) async {
+    final uri = Uri.parse('${Config.baseUrl}/letters/$id');
+
+    var request = http.MultipartRequest('PUT', uri)
+      ..fields['title'] = title
+      ..fields['content'] = content
+      ..fields['date'] = date.toIso8601String();
+
+    if (photos != null) {
+      for (var file in photos) {
+        request.files.add(await http.MultipartFile.fromPath('photos', file.path));
+      }
+    }
+
+    var response = await request.send();
+    print('updateLetter API statusCode: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      var responseData = await http.Response.fromStream(response);
+      return jsonDecode(responseData.body);
+    } else {
+      throw Exception('Failed to update letter');
     }
   }
 
