@@ -69,6 +69,20 @@ class MissionDetailView extends StatelessWidget {
                     );
                   }).toList(),
                 ),
+              SizedBox(height: 16.0),
+              if (mission.aiComment != null)
+                Text(
+                  'AI Comment:',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              if (mission.aiComment != null)
+                Text(
+                  mission.aiComment!,
+                  style: TextStyle(fontSize: 16.0),
+                ),
             ],
           ),
         ),
