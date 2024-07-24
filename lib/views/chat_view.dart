@@ -242,14 +242,45 @@ class _ChatViewState extends State<ChatView> {
     );
   }
   Widget _buildTopicButton(String label, String topic) {
+    final isSelected = _selectedTopic == topic;
     return ElevatedButton(
       onPressed: () {
         setState(() {
           _selectedTopic = topic;
         });
+        _sendInitialBotMessageForTopic(topic);
       },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? Colors.blueAccent : Colors.grey, // Change color based on selection
+      ),
       child: Text(label),
     );
   }
 
+  void _sendInitialBotMessageForTopic(String topic) {
+    String initialMessage;
+    switch (topic) {
+      case 'conversation':
+        initialMessage = "대화주제를 선택하셨네요! 어떤 분위기의 대화를 원하세요?";
+        break;
+      case 'date':
+        initialMessage = "데이트코스를 선택하셨네요! 어느 지역의 코스를 원하세요?";
+        break;
+      case 'activity':
+        initialMessage = "활동추천을 선택하셨네요! 야외 활동을 원하세요, 실내활동을 원하세요?";
+        break;
+      case 'fight':
+        initialMessage = "두분 무슨 일 있으세요? 어떤 말을 전해드릴까요?";
+        break;
+      default:
+        initialMessage = "주제를 선택해주세요.";
+    }
+
+    setState(() {
+      _messages.add({
+        'sender': 'Bot',
+        'message': initialMessage,
+      });
+    });
+  }
 }
