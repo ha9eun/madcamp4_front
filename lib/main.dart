@@ -1,4 +1,5 @@
 import 'package:couple/view_models/letter_view_model.dart';
+import 'package:couple/views/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
@@ -79,9 +80,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Couple',
-        initialRoute: '/',
+        home: SplashScreen(),
         routes: {
-          '/': (context) => AuthCheck(),
+          '/auth_check': (context) => AuthCheck(),
           '/main': (context) => MainApp(),
           '/login': (context) => LoginView(),
           '/coupleInput': (context) => CoupleIdInputView(),
