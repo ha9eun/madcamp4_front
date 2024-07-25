@@ -233,13 +233,13 @@ class _CalendarViewState extends State<CalendarView> {
               onTap: () async {
                 Navigator.pop(context); // Close the options dialog
                 await Provider.of<CoupleViewModel>(context, listen: false).deleteSchedule(schedule.id);
-                setState(() {
-                  final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
-                  _selectedEvents = [
-                    ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
-                    ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
-                  ];
-                });
+                // setState(() {
+                //   final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
+                //   _selectedEvents = [
+                //     ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
+                //     ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
+                //   ];
+                // });
               },
             ),
           ],
