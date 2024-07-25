@@ -216,6 +216,7 @@ class _CalendarViewState extends State<CalendarView> {
 
   void _showOptionsDialog(BuildContext context, Schedule schedule) {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       builder: (context) {
         return Column(
@@ -223,7 +224,7 @@ class _CalendarViewState extends State<CalendarView> {
           children: [
             ListTile(
               leading: Icon(Icons.edit),
-              title: Text('Edit'),
+              title: Text('수정'),
               onTap: () {
                 Navigator.pop(context); // Close the options dialog
                 showDialog(
@@ -242,7 +243,7 @@ class _CalendarViewState extends State<CalendarView> {
             ),
             ListTile(
               leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              title: Text('삭제'),
               onTap: () async {
                 Navigator.pop(context); // Close the options dialog
                 await Provider.of<CoupleViewModel>(context, listen: false).deleteSchedule(schedule.id);
