@@ -50,93 +50,97 @@ class _CalendarViewState extends State<CalendarView> {
               ? Center(child: Text('Failed to load couple info'))
               : Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: userViewModel.user?.nickname ?? '',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 24,
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: userViewModel.user?.nickname ?? '',
+                          style: TextStyle(fontSize: 24, color: Colors.black),
                         ),
-                      ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.partnerNickname}',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                    ],
+                        WidgetSpan(
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 24,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' ${coupleViewModel.couple!.partnerNickname}',
+                          style: TextStyle(fontSize: 24, color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
+                          style: TextStyle(fontSize: 24, color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              TableCalendar(
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 3, 14),
-                focusedDay: _focusedDay,
-                calendarFormat: CalendarFormat.month,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                    _selectedEvents = [
-                      ..._getEventsForDay(selectedDay, coupleViewModel.couple!.anniversaries),
-                      ..._getSchedulesForDay(selectedDay, coupleViewModel.couple!.schedules),
-                    ];
-                  });
-                },
-                eventLoader: (day) {
-                  return [
-                    ..._getEventsForDay(day, coupleViewModel.couple!.anniversaries),
-                    ..._getSchedulesForDay(day, coupleViewModel.couple!.schedules),
-                  ];
-                },
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, day, events) {
-                    if (events.isNotEmpty) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: events.map((event) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                            width: 5,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: event is Anniversary ? Colors.red : Colors.blue,
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    }
-                    return null;
+              SingleChildScrollView(
+                child: TableCalendar(
+                  firstDay: DateTime.utc(2010, 10, 16),
+                  lastDay: DateTime.utc(2030, 3, 14),
+                  focusedDay: _focusedDay,
+                  calendarFormat: CalendarFormat.month,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
                   },
-                ),
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
-                  rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
-                ),
-                calendarStyle: CalendarStyle(
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                      _selectedEvents = [
+                        ..._getEventsForDay(selectedDay, coupleViewModel.couple!.anniversaries),
+                        ..._getSchedulesForDay(selectedDay, coupleViewModel.couple!.schedules),
+                      ];
+                    });
+                  },
+                  eventLoader: (day) {
+                    return [
+                      ..._getEventsForDay(day, coupleViewModel.couple!.anniversaries),
+                      ..._getSchedulesForDay(day, coupleViewModel.couple!.schedules),
+                    ];
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, day, events) {
+                      if (events.isNotEmpty) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: events.map((event) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: event is Anniversary ? Colors.red : Colors.blue,
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }
+                      return null;
+                    },
                   ),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.5),
-                    shape: BoxShape.circle,
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                    leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+                    rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+                  ),
+                  calendarStyle: CalendarStyle(
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.purple,
+                      shape: BoxShape.circle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: Colors.purple.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
               ),
@@ -145,17 +149,19 @@ class _CalendarViewState extends State<CalendarView> {
                   itemCount: _selectedEvents.length,
                   itemBuilder: (context, index) {
                     final event = _selectedEvents[index];
-                    return ListTile(
-                      leading: Icon(
-                        event is Anniversary ? Icons.cake : Icons.event,
-                        color: event is Anniversary ? Colors.red : Colors.blue,
+                    return SingleChildScrollView(
+                      child: ListTile(
+                        leading: Icon(
+                          event is Anniversary ? Icons.cake : Icons.event,
+                          color: event is Anniversary ? Colors.red : Colors.blue,
+                        ),
+                        title: Text(event.title),
+                        onLongPress: () {
+                          if (event is Schedule) {
+                            _showOptionsDialog(context, event);
+                          }
+                        },
                       ),
-                      title: Text(event.title),
-                      onLongPress: () {
-                        if (event is Schedule) {
-                          _showOptionsDialog(context, event);
-                        }
-                      },
                     );
                   },
                 ),
