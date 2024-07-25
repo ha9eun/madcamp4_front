@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import '../models/anniversary_model.dart';
 import '../models/schedule_model.dart';
 import '../view_models/couple_view_model.dart';
@@ -18,6 +19,12 @@ class _CalendarViewState extends State<CalendarView> {
   DateTime _selectedDay = DateTime.now().toLocal();
   DateTime _focusedDay = DateTime.now().toLocal();
   List<dynamic> _selectedEvents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('ko_KR', null); // 한글 로케일 초기화
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,48 +46,68 @@ class _CalendarViewState extends State<CalendarView> {
                 : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: userViewModel.user?.nickname ?? '',
-                              style: TextStyle(fontSize: 24, color: Colors.black),
-                            ),
-                            WidgetSpan(
-                              child: Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                                size: 24,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    userViewModel.user?.nickname ?? '',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Icon(
+                                    Icons.favorite,
+                                    color: Color(0xFFCD001F),
+                                    size: 28,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    coupleViewModel.couple!.partnerNickname,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            TextSpan(
-                              text: ' ${coupleViewModel.couple!.partnerNickname}',
-                              style: TextStyle(fontSize: 24, color: Colors.black),
-                            ),
-                            TextSpan(
-                              text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
-                              style: TextStyle(fontSize: 24, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          icon: Icon(Icons.logout, color: Colors.black),
-                          onPressed: () async {
-                            await Provider.of<LoginViewModel>(context, listen: false).logout(context);
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
-                        ),
+                              SizedBox(height: 8),
+                              Text(
+                                '+${coupleViewModel.couple!.daysSinceStart}일',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings, color: Colors.black),
+                            onPressed: () async {
+                              await Provider.of<LoginViewModel>(context, listen: false)
+                                  .logout(context);
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
                 TableCalendar(
+                  locale: 'ko_KR', // 한글 로케일 설정
                   firstDay: DateTime.utc(2010, 10, 16),
                   lastDay: DateTime.utc(2030, 3, 14),
                   focusedDay: _focusedDay,
