@@ -15,12 +15,15 @@ import 'views/couple_id_input_view.dart';
 import 'views/chat_view.dart';
 import 'views/mission_view.dart';
 import 'views/letter_view.dart';
+import 'views/register_view.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  final themeColor = Color(0xFFCD001F);
+
   @override
   Widget build(BuildContext context) {
     final secureStorageService = SecureStorageService();
@@ -80,12 +83,29 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'LoveLog',
+        theme: ThemeData(
+          primaryColor: themeColor,
+          inputDecorationTheme: InputDecorationTheme(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            hintStyle: TextStyle(color: Colors.black),
+            labelStyle: TextStyle(color: Colors.black),
+          ),
+        ),
         home: SplashScreen(),
         routes: {
           '/auth_check': (context) => AuthCheck(),
           '/main': (context) => MainApp(),
           '/login': (context) => LoginView(),
           '/coupleInput': (context) => CoupleIdInputView(),
+          '/register': (context) => RegisterView(),
         },
       ),
     );
@@ -101,7 +121,7 @@ class _AuthCheckState extends State<AuthCheck> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLoginStatus();
     });
   }
@@ -158,13 +178,13 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Scaffold의 기본 배경 색상 설정
+      backgroundColor: Colors.grey[200],
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
-        currentIndex: _currentIndex, // BottomNavigationBar의 배경 색상 설정
-        selectedItemColor: Color(0xFFCD001F), // 선택된 아이템의 색상 설정
-        unselectedItemColor: Colors.black, // 선택되지 않은 아이템의 색상 설정
+        currentIndex: _currentIndex,
+        selectedItemColor: Color(0xFFCD001F),
+        unselectedItemColor: Colors.black,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
