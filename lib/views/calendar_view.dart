@@ -204,10 +204,7 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => AddScheduleDialog(selectedDate: _selectedDay),
-        ),
+        onPressed: () => showAddScheduleDialog(context, _selectedDay),
         child: Icon(Icons.add, color: themeColor), // 아이콘 색상을 themeColor로 설정
         backgroundColor: Colors.white, // 배경색을 흰색으로 설정
       ),

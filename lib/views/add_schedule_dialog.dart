@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/couple_view_model.dart';
-import '../models/schedule_model.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class AddScheduleDialog extends StatefulWidget {
-  final DateTime selectedDate; // 선택된 날짜를 받기 위해 추가
+  final DateTime selectedDate;
 
   AddScheduleDialog({required this.selectedDate});
 
@@ -20,7 +20,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = widget.selectedDate; // 선택된 날짜를 기본값으로 설정
+    _selectedDate = widget.selectedDate;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -40,12 +40,14 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
   Widget build(BuildContext context) {
     final themeColor = Color(0xFFCD001F);
 
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
+    return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          top: 16.0,
+          bottom: 16.0,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -54,7 +56,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: themeColor,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 16.0),
@@ -82,25 +84,45 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               ),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: themeColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: themeColor,
+                textStyle: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               ),
               onPressed: () async {
                 if (_titleController.text.isNotEmpty) {
-                  await Provider.of<CoupleViewModel>(context, listen: false).addSchedule(_selectedDate,_titleController.text);
+                  await Provider.of<CoupleViewModel>(context, listen: false)
+                      .addSchedule(_selectedDate, _titleController.text);
                   Navigator.pop(context);
                 }
               },
-              child: Text('추가'),
+              child: Text('완료'),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+void showAddScheduleDialog(BuildContext context, DateTime selectedDate) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: AddScheduleDialog(selectedDate: selectedDate),
+      );
+    },
+  );
 }
