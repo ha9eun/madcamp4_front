@@ -98,6 +98,9 @@ class MyApp extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.black),
             labelStyle: TextStyle(color: Colors.black),
           ),
+          progressIndicatorTheme: ProgressIndicatorThemeData(
+            color: themeColor,
+          ),
         ),
         home: SplashScreen(),
         routes: {
