@@ -224,18 +224,7 @@ class _CalendarViewState extends State<CalendarView> {
               title: Text('수정'),
               onTap: () {
                 Navigator.pop(context); // Close the options dialog
-                showDialog(
-                  context: context,
-                  builder: (context) => EditScheduleDialog(schedule: schedule),
-                ).then((_) {
-                  final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
-                  setState(() {
-                    _selectedEvents = [
-                      ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
-                      ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
-                    ];
-                  });
-                });
+                showEditScheduleDialog(context, schedule);
               },
             ),
             ListTile(
@@ -274,4 +263,42 @@ class _CalendarViewState extends State<CalendarView> {
           schedule.date.day == day.day;
     }).toList();
   }
+}
+
+void showAddScheduleDialog(BuildContext context, DateTime selectedDate) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: AddScheduleDialog(selectedDate: selectedDate),
+      );
+    },
+  );
+}
+
+void showEditScheduleDialog(BuildContext context, Schedule schedule) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: EditScheduleDialog(schedule: schedule),
+      );
+    },
+  );
 }
