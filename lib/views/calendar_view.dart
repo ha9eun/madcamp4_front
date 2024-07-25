@@ -143,7 +143,7 @@ class _CalendarViewState extends State<CalendarView> {
                               margin: const EdgeInsets.symmetric(horizontal: 2.0),
                               child: Icon(
                                 Icons.favorite,
-                                color: event is Anniversary ? themeColor : Colors.cyan,
+                                color: event is Anniversary ? themeColor : Color(0xFF017f96),
                                 size: 12,
                               ),
                             );
@@ -186,7 +186,7 @@ class _CalendarViewState extends State<CalendarView> {
                       return ListTile(
                         leading: Icon(
                           event is Anniversary ? Icons.cake : Icons.event,
-                          color: event is Anniversary ? themeColor : Colors.cyan,
+                          color: event is Anniversary ? themeColor : Color(0xFF017f96),
                         ),
                         title: Text(event.title),
                         onLongPress: () {
@@ -206,7 +206,7 @@ class _CalendarViewState extends State<CalendarView> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) => AddScheduleDialog(),
+          builder: (context) => AddScheduleDialog(selectedDate: _selectedDay),
         ),
         child: Icon(Icons.add, color: themeColor), // 아이콘 색상을 themeColor로 설정
         backgroundColor: Colors.white, // 배경색을 흰색으로 설정
