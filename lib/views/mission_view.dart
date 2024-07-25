@@ -22,38 +22,62 @@ class _MissionViewState extends State<MissionView> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Color(0xFFCD001F);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Mission'),
-      ),
-      body: Consumer<MissionViewModel>(
-        builder: (context, viewModel, child) {
-          if (viewModel.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: Consumer<MissionViewModel>(
+          builder: (context, viewModel, child) {
+            if (viewModel.isLoading) {
+              return Center(child: CircularProgressIndicator(color: themeColor));
+            }
 
-          if (viewModel.missions == null || viewModel.missions!.isEmpty) {
-            return Center(child: Text('No missions available.'));
-          }
+            if (viewModel.missions == null || viewModel.missions!.isEmpty) {
+              return Center(child: Text('사용 가능한 미션이 없습니다.'));
+            }
 
-          return ListView.builder(
-            itemCount: viewModel.missions!.length,
-            itemBuilder: (context, index) {
-              final mission = viewModel.missions![index];
-              return MissionCard(
-                mission: mission,
-                onComplete: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CompleteMissionView(missionId: mission.id),
+            final ongoingMissions = viewModel.missions!.where((mission) => mission.diary == null).toList();
+            final completedMissions = viewModel.missions!.where((mission) => mission.diary != null).toList();
+
+            return ListView(
+              children: [
+                if (ongoingMissions.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      '진행 중인 미션',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-              );
-            },
-          );
-        },
+                  ),
+                  ...ongoingMissions.map((mission) => MissionCard(
+                    mission: mission,
+                    onComplete: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CompleteMissionView(missionId: mission.id),
+                        ),
+                      );
+                    },
+                  )),
+                ],
+                if (completedMissions.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      '완료된 미션',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ...completedMissions.map((mission) => MissionCard(
+                    mission: mission,
+                    onComplete: () {}, // Completed missions don't need a complete button
+                  )),
+                ],
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -71,6 +95,8 @@ class MissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Color(0xFFCD001F);
+
     return GestureDetector(
       onTap: mission.diary != null
           ? () {
@@ -83,7 +109,12 @@ class MissionCard extends StatelessWidget {
       }
           : null,
       child: Card(
-        margin: EdgeInsets.all(8.0),
+        color: Colors.white,
+        margin: EdgeInsets.all(12.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        elevation: 4,
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -92,20 +123,31 @@ class MissionCard extends StatelessWidget {
               Text(
                 mission.mission,
                 style: TextStyle(
-                  fontSize: 18.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
               SizedBox(height: 8.0),
               Text(
-                'Date: ${DateFormat('yyyy-MM-dd').format(mission.date.toLocal())}',
-                style: TextStyle(fontSize: 16.0),
+                '${DateFormat('yyyy년 MM월 dd일').format(mission.date.toLocal())}',
+                style: TextStyle(fontSize: 13.0, color: Colors.grey[600]),
               ),
               if (mission.diary == null) ...[
                 SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: onComplete,
-                  child: Text('Complete Mission'),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: onComplete,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: themeColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    ),
+                    child: Text('미션 완료', style: TextStyle(color: Colors.white)),
+                  ),
                 ),
               ],
             ],
