@@ -91,30 +91,9 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
         final now = DateTime.now();
         final isSentComplete = letter.date.isBefore(now);
 
-        return Card(
-          margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(16.0),
-            title: Text(letter.title ?? 'No Title', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('From: $senderName', style: TextStyle(color: Colors.grey[600])),
-                Text(
-                  '${DateFormat('yyyy-MM-dd HH:mm').format(letter.date)}',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ],
-            ),
-            trailing: isSent
-                ? Text(
-              isSentComplete ? '전송 완료' : '전송 전',
-              style: TextStyle(color: isSentComplete ? Colors.green : Colors.red),
-            )
-                : null,
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: GestureDetector(
             onTap: () {
               if (!isSent && letter.date.isAfter(now)) {
                 _showAlertDialog(context);
@@ -130,6 +109,76 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
                 );
               }
             },
+            child: Stack(
+              children: [
+                CustomPaint(
+                  size: Size(double.infinity, 200),
+                  painter: EnvelopePainter(),
+                ),
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  right: 20,
+                  bottom: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/crumpled.jpg'), // 구겨진 종이 텍스처 이미지 추가
+                        fit: BoxFit.cover,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4.0,
+                          spreadRadius: 2.0,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          letter.title ?? 'No Title',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          'From: $senderName',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(letter.date),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        if (isSent)
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(
+                              isSentComplete ? '전송 완료' : '전송 전',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isSentComplete ? Colors.black : Colors.grey,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -152,5 +201,37 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
         ],
       ),
     );
+  }
+}
+
+class EnvelopePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.brown[300]!
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(0, size.height * 0.4); // 높이 40% 위치에서 시작
+    path.lineTo(size.width * 0.5, 0);
+    path.lineTo(size.width, size.height * 0.4); // 높이 40% 위치로 변경
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+
+    final lowerPath = Path();
+    lowerPath.moveTo(0, size.height);
+    lowerPath.lineTo(size.width * 0.5, size.height * 0.4); // 편지지가 살짝 보이도록 높이 조정
+    lowerPath.lineTo(size.width, size.height);
+    lowerPath.close();
+
+    canvas.drawPath(lowerPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

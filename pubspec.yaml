@@ -71,6 +71,7 @@ flutter:
   assets:
     - assets/001.png
     - assets/002.png
+    - assets/crumpled.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
