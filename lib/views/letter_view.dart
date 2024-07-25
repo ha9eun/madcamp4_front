@@ -93,14 +93,14 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
         if (letter == null) return SizedBox.shrink(); // Null safety check
         final senderName = letterViewModel.getSenderName(letter.senderId);
         final now = DateTime.now();
-        final isSentComplete = letter.date.isBefore(now);
+        final isSentComplete = letter.date.toLocal().isBefore(now);
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: GestureDetector(
             onTap: () {
-              if (!isSent && letter.date.isAfter(now)) {
-                _showAlertDialog(context);
+              if (!isSent && letter.date.toLocal().isAfter(now)) {
+                _showSnackBar(context, letter.date.toLocal());
               } else {
                 Navigator.push(
                   context,
@@ -160,7 +160,7 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
                           ),
                         ),
                         Text(
-                          DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(letter.date),
+                          DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(letter.date.toLocal()),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -189,22 +189,13 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
     );
   }
 
-  void _showAlertDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('편지를 읽을 수 없습니다'),
-        content: Text('아직 수신 시간이 되지 않았습니다.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('확인'),
-          ),
-        ],
-      ),
+  void _showSnackBar(BuildContext context, DateTime date) {
+    final formattedDate = DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(date);
+    final snackBar = SnackBar(
+      content: Text('$formattedDate에 공개됩니다!'),
+      duration: Duration(seconds: 3),
     );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
