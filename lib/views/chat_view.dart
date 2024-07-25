@@ -124,9 +124,10 @@ class _ChatViewState extends State<ChatView> {
     final partnerNickname = coupleViewModel.couple?.partnerNickname ?? 'User2';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('$myNickname and $partnerNickname\'s Chat'),
-      ),
+      backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   title: Text('$myNickname and $partnerNickname\'s Chat'),
+      // ),
       body: Column(
         children: [
           Expanded(
@@ -149,7 +150,7 @@ class _ChatViewState extends State<ChatView> {
                         padding: EdgeInsets.all(10.0),
                         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
                         decoration: BoxDecoration(
-                          color: isMe ? Colors.blue : Colors.grey[300],
+                          color: isMe ? Color(0xFFCD001F) : Colors.grey[200],
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         child: Column(
@@ -229,12 +230,19 @@ class _ChatViewState extends State<ChatView> {
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
-                      hintText: 'Enter your message',
+                      hintText: '지둘기에게 무엇이든 말해보세요!',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFCD001F)), // 기본 테두리 색상
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFCD001F)), // 포커스된 상태의 테두리 색상
+                      ),
                     ),
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
+                  color: Color(0xFFCD001F),
                   onPressed: () {
                     _sendMessage(_controller.text);
                     _controller.clear();
@@ -257,9 +265,9 @@ class _ChatViewState extends State<ChatView> {
         _sendInitialBotMessageForTopic(topic);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.blueAccent : Colors.grey, // Change color based on selection
+        backgroundColor: isSelected ? Colors.blueAccent : Color(0xFF017f96), // Change color based on selection
       ),
-      child: Text(label),
+      child: Text(label, style: TextStyle(color: Colors.white),),
     );
   }
 
