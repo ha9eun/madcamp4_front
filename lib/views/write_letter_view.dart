@@ -32,7 +32,7 @@ class _WriteLetterViewState extends State<WriteLetterView> {
       _titleController.text = widget.letter!.title;
       _contentController.text = widget.letter!.content;
       _selectedDate = widget.letter!.date;
-      _dateController.text = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
+      _dateController.text = DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(_selectedDate!);
       _existingPhotos = List<String>.from(widget.letter!.photoUrls ?? []);
     }
   }
@@ -81,7 +81,15 @@ class _WriteLetterViewState extends State<WriteLetterView> {
     final themeColor = Color(0xFFCD001F);
 
     return Scaffold(
-      body: Padding(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/crumpled.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -101,6 +109,8 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                 decoration: InputDecoration(
                   labelText: '제목',
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -109,6 +119,8 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                 decoration: InputDecoration(
                   labelText: '내용',
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
                 ),
                 maxLines: 5,
               ),
@@ -121,6 +133,8 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                     decoration: InputDecoration(
                       labelText: '날짜와 시간 선택',
                       border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.8),
                     ),
                   ),
                 ),
