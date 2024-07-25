@@ -8,6 +8,7 @@ import '../view_models/login_view_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'add_schedule_dialog.dart';
 import 'edit_schedule_dialog.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class CalendarView extends StatefulWidget {
   @override
@@ -20,66 +21,95 @@ class _CalendarViewState extends State<CalendarView> {
   List<dynamic> _selectedEvents = [];
 
   @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('ko_KR', null); // 한글 로케일 초기화
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userViewModel = Provider.of<UserViewModel>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Calendar'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.black),
-            onPressed: () async {
-              await Provider.of<LoginViewModel>(context, listen: false).logout(context);
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
-      body: Consumer<CoupleViewModel>(
-        builder: (context, coupleViewModel, child) {
-          _selectedEvents = [
-            ..._getEventsForDay(_selectedDay, coupleViewModel.couple?.anniversaries ?? []),
-            ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple?.schedules ?? []),
-          ];
+    final themeColor = Color(0xFFCD001F);
 
-          return coupleViewModel.isLoading
-              ? Center(child: CircularProgressIndicator())
-              : coupleViewModel.couple == null
-              ? Center(child: Text('Failed to load couple info'))
-              : Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: RichText(
-                  text: TextSpan(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Consumer<CoupleViewModel>(
+          builder: (context, coupleViewModel, child) {
+            _selectedEvents = [
+              ..._getEventsForDay(_selectedDay, coupleViewModel.couple?.anniversaries ?? []),
+              ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple?.schedules ?? []),
+            ];
+
+            return coupleViewModel.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : coupleViewModel.couple == null
+                ? Center(child: Text('Failed to load couple info'))
+                : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: userViewModel.user?.nickname ?? '',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 24,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.partnerNickname}',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    userViewModel.user?.nickname ?? '',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Icon(
+                                    Icons.favorite,
+                                    color: themeColor,
+                                    size: 28,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    coupleViewModel.couple!.partnerNickname,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '+${coupleViewModel.couple!.daysSinceStart}일',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings, color: Colors.black),
+                            onPressed: () async {
+                              await Provider.of<LoginViewModel>(context, listen: false)
+                                  .logout(context);
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
-              SingleChildScrollView(
-                child: TableCalendar(
+                TableCalendar(
+                  locale: 'ko_KR', // 한글 로케일 설정
                   firstDay: DateTime.utc(2010, 10, 16),
                   lastDay: DateTime.utc(2030, 3, 14),
                   focusedDay: _focusedDay,
@@ -110,12 +140,11 @@ class _CalendarViewState extends State<CalendarView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: events.map((event) {
                             return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                              width: 5,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: event is Anniversary ? Colors.red : Colors.blue,
+                              margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                              child: Icon(
+                                Icons.favorite,
+                                color: event is Anniversary ? themeColor : Color(0xFF017f96),
+                                size: 12,
                               ),
                             );
                           }).toList(),
@@ -127,58 +156,64 @@ class _CalendarViewState extends State<CalendarView> {
                   headerStyle: HeaderStyle(
                     formatButtonVisible: false,
                     titleCentered: true,
+                    titleTextStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                     leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
                     rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
                   ),
                   calendarStyle: CalendarStyle(
                     selectedDecoration: BoxDecoration(
-                      color: Colors.purple,
+                      color: themeColor,
                       shape: BoxShape.circle,
                     ),
                     todayDecoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.5),
+                      color: themeColor.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
+                    defaultTextStyle: TextStyle(color: Colors.black),
+                    weekendTextStyle: TextStyle(color: Colors.black),
+                    outsideDaysVisible: false,
                   ),
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _selectedEvents.length,
-                  itemBuilder: (context, index) {
-                    final event = _selectedEvents[index];
-                    return ListTile(
-                      leading: Icon(
-                        event is Anniversary ? Icons.cake : Icons.event,
-                        color: event is Anniversary ? Colors.red : Colors.blue,
-                      ),
-                      title: Text(event.title),
-                      onLongPress: () {
-                        if (event is Schedule) {
-                          _showOptionsDialog(context, event);
-                        }
-                      },
-                    );
-                  },
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _selectedEvents.length,
+                    itemBuilder: (context, index) {
+                      final event = _selectedEvents[index];
+                      return ListTile(
+                        leading: Icon(
+                          event is Anniversary ? Icons.cake : Icons.event,
+                          color: event is Anniversary ? themeColor : Color(0xFF017f96),
+                        ),
+                        title: Text(event.title),
+                        onLongPress: () {
+                          if (event is Schedule) {
+                            _showOptionsDialog(context, event);
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => AddScheduleDialog(),
-        ),
-        child: Icon(Icons.add),
-        backgroundColor: Colors.purple,
+        onPressed: () => showAddScheduleDialog(context, _selectedDay),
+        child: Icon(Icons.add, color: themeColor), // 아이콘 색상을 themeColor로 설정
+        backgroundColor: Colors.white, // 배경색을 흰색으로 설정
       ),
     );
   }
 
   void _showOptionsDialog(BuildContext context, Schedule schedule) {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       builder: (context) {
         return Column(
@@ -186,36 +221,25 @@ class _CalendarViewState extends State<CalendarView> {
           children: [
             ListTile(
               leading: Icon(Icons.edit),
-              title: Text('Edit'),
+              title: Text('수정'),
               onTap: () {
                 Navigator.pop(context); // Close the options dialog
-                showDialog(
-                  context: context,
-                  builder: (context) => EditScheduleDialog(schedule: schedule),
-                ).then((_) {
-                  final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
-                  setState(() {
-                    _selectedEvents = [
-                      ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
-                      ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
-                    ];
-                  });
-                });
+                showEditScheduleDialog(context, schedule);
               },
             ),
             ListTile(
               leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              title: Text('삭제'),
               onTap: () async {
                 Navigator.pop(context); // Close the options dialog
                 await Provider.of<CoupleViewModel>(context, listen: false).deleteSchedule(schedule.id);
-                setState(() {
-                  final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
-                  _selectedEvents = [
-                    ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
-                    ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
-                  ];
-                });
+                // setState(() {
+                //   final coupleViewModel = Provider.of<CoupleViewModel>(context, listen: false);
+                //   _selectedEvents = [
+                //     ..._getEventsForDay(_selectedDay, coupleViewModel.couple!.anniversaries),
+                //     ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple!.schedules),
+                //   ];
+                // });
               },
             ),
           ],
@@ -239,4 +263,42 @@ class _CalendarViewState extends State<CalendarView> {
           schedule.date.day == day.day;
     }).toList();
   }
+}
+
+void showAddScheduleDialog(BuildContext context, DateTime selectedDate) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: AddScheduleDialog(selectedDate: selectedDate),
+      );
+    },
+  );
+}
+
+void showEditScheduleDialog(BuildContext context, Schedule schedule) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: EditScheduleDialog(schedule: schedule),
+      );
+    },
+  );
 }

@@ -162,26 +162,25 @@ class _MainAppState extends State<MainApp> {
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        backgroundColor: Colors.blue, // BottomNavigationBar의 배경 색상 설정
-        selectedItemColor: Colors.yellow, // 선택된 아이템의 색상 설정
+        currentIndex: _currentIndex, // BottomNavigationBar의 배경 색상 설정
+        selectedItemColor: Color(0xFFCD001F), // 선택된 아이템의 색상 설정
         unselectedItemColor: Colors.black, // 선택되지 않은 아이템의 색상 설정
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
+            label: '캘린더',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: 'Chat',
+            label: '채팅',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            label: 'Mission',
+            label: '미션',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.mail),
-            label: 'Letter',
+            label: '편지',
           ),
         ],
       ),
