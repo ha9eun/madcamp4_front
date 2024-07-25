@@ -16,7 +16,7 @@ class _ChatViewState extends State<ChatView> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> _messages = [];
   String? _selectedTopic;
-  TextSelection _selection = TextSelection(baseOffset: -1, extentOffset: -1);
+  String? _selectedText;
 
   Future<void> _sendMessage(String message) async {
     try {
@@ -163,43 +163,34 @@ class _ChatViewState extends State<ChatView> {
                               ),
                             ),
                             SizedBox(height: 5.0),
-                            // SelectableText(
-                            //   enableInteractiveSelection: true,
-                            //   scrollPhysics: ClampingScrollPhysics(),
-                            //   showCursor: true,
-                            //   message['message'],
-                            //   style: TextStyle(
-                            //     color: isMe ? Colors.white : Colors.black,
-                            //   ),
-                            //   onSelectionChanged: (selection, cause) {
-                            //     // Selection가 유효한지 확인
-                            //     if (selection.start >= 0 && selection.end <= message['message'].length) {
-                            //       final selectedText = message['message'].substring(selection.start, selection.end).trim();
-                            //       if (selectedText.isNotEmpty) {
-                            //         _showPopupMenu(context, selectedText, Offset.zero);
-                            //       }
-                            //     }
-                            //   },
-                            // ),
                             GestureDetector(
-                              onTapDown: (details) {
-                                _showPopupMenu(context, Offset(details.globalPosition.dx, details.globalPosition.dy));
+                              onTapDown: (TapDownDetails details) {
+                                if (_selectedText != null && _selectedText!.isNotEmpty) {
+                                  _showPopupMenu(context, details.globalPosition);
+                                }
                               },
                               child: SelectableText(
                                 message['message'],
                                 style: TextStyle(
                                   color: isMe ? Colors.white : Colors.black,
                                 ),
-                                enableInteractiveSelection: true,
+                                // enableInteractiveSelection: true,
                                 showCursor: true,
                                 onSelectionChanged: (selection, cause) {
                                   setState(() {
-                                    _selection = selection;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
+                                    setState(() {
+                                      if (selection.start != -1 &&
+                                          selection.end != -1) {
+                                        _selectedText = message['message']
+                                            .substring(
+                                            selection.start, selection.end)
+                                            .trim();
+                                      }
+                                    });
+                                  },
+                                  );
+                                }),
+                            )],
                         ),
                       ),
                       if (isMe)
@@ -298,38 +289,12 @@ class _ChatViewState extends State<ChatView> {
       });
     });
   }
-//   void _showPopupMenu(BuildContext context, String selectedText, Offset position) {
-//     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-//
-//     showMenu(
-//       context: context,
-//       position: RelativeRect.fromRect(
-//         Rect.fromPoints(position, position),
-//         Offset.zero & overlay.size,
-//       ),
-//       items: [
-//         PopupMenuItem(
-//           value: 'add_mission',
-//           child: Text('미션추가'),
-//         ),
-//         PopupMenuItem(
-//           value: 'cancel',
-//           child: Text('취소'),
-//         ),
-//       ],
-//     ).then((value) {
-//       if (value == 'add_mission') {
-//         print('Add Mission selected'); // For debugging
-//         ChatModal.showMissionModal(context, selectedText);
-//       }
-//     });
-//   }
-// }
+
   void _showPopupMenu(BuildContext context, Offset position) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    final String selectedText = _getSelectedText();
-    if (selectedText.isNotEmpty) {
+
+    if (_selectedText != null && _selectedText!.isNotEmpty) {
       showMenu(
         context: context,
         position: RelativeRect.fromRect(
@@ -349,22 +314,9 @@ class _ChatViewState extends State<ChatView> {
       ).then((value) {
         if (value == 'add_mission') {
           print('Add Mission selected'); // For debugging
-          ChatModal.showMissionModal(context, selectedText);
+          ChatModal.showMissionModal(context, _selectedText!);
         }
       });
     }
   }
-
-  String _getSelectedText() {
-    if (_selection.baseOffset != -1 && _selection.extentOffset != -1) {
-      // 정확한 메시지를 찾기 위해 선택된 범위에 해당하는 메시지 검색
-      for (var message in _messages) {
-        String messageText = message['message'];
-        if (_selection.baseOffset < messageText.length && _selection.extentOffset <= messageText.length) {
-          return messageText.substring(_selection.baseOffset, _selection.extentOffset).trim();
-        }
-      }
-    }
-    return '';
   }
-}
