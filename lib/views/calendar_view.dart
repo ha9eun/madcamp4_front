@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import '../models/anniversary_model.dart';
 import '../models/schedule_model.dart';
 import '../view_models/couple_view_model.dart';
@@ -9,6 +8,7 @@ import '../view_models/login_view_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'add_schedule_dialog.dart';
 import 'edit_schedule_dialog.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class CalendarView extends StatefulWidget {
   @override
@@ -29,6 +29,8 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   Widget build(BuildContext context) {
     final userViewModel = Provider.of<UserViewModel>(context);
+    final themeColor = Color(0xFFCD001F);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -69,7 +71,7 @@ class _CalendarViewState extends State<CalendarView> {
                                   SizedBox(width: 4),
                                   Icon(
                                     Icons.favorite,
-                                    color: Color(0xFFCD001F),
+                                    color: themeColor,
                                     size: 28,
                                   ),
                                   SizedBox(width: 4),
@@ -138,12 +140,11 @@ class _CalendarViewState extends State<CalendarView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: events.map((event) {
                             return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                              width: 5,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: event is Anniversary ? Colors.red : Colors.blue,
+                              margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                              child: Icon(
+                                Icons.favorite,
+                                color: event is Anniversary ? themeColor : Colors.cyan,
+                                size: 12,
                               ),
                             );
                           }).toList(),
@@ -155,18 +156,26 @@ class _CalendarViewState extends State<CalendarView> {
                   headerStyle: HeaderStyle(
                     formatButtonVisible: false,
                     titleCentered: true,
+                    titleTextStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                     leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
                     rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
                   ),
                   calendarStyle: CalendarStyle(
                     selectedDecoration: BoxDecoration(
-                      color: Colors.purple,
+                      color: themeColor,
                       shape: BoxShape.circle,
                     ),
                     todayDecoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.5),
+                      color: themeColor.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
+                    defaultTextStyle: TextStyle(color: Colors.black),
+                    weekendTextStyle: TextStyle(color: Colors.black),
+                    outsideDaysVisible: false,
                   ),
                 ),
                 Expanded(
@@ -177,7 +186,7 @@ class _CalendarViewState extends State<CalendarView> {
                       return ListTile(
                         leading: Icon(
                           event is Anniversary ? Icons.cake : Icons.event,
-                          color: event is Anniversary ? Colors.red : Colors.blue,
+                          color: event is Anniversary ? themeColor : Colors.cyan,
                         ),
                         title: Text(event.title),
                         onLongPress: () {
@@ -199,8 +208,8 @@ class _CalendarViewState extends State<CalendarView> {
           context: context,
           builder: (context) => AddScheduleDialog(),
         ),
-        child: Icon(Icons.add),
-        backgroundColor: Colors.purple,
+        child: Icon(Icons.add, color: themeColor), // 아이콘 색상을 themeColor로 설정
+        backgroundColor: Colors.white, // 배경색을 흰색으로 설정
       ),
     );
   }
