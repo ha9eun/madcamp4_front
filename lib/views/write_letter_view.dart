@@ -69,7 +69,7 @@ class _WriteLetterViewState extends State<WriteLetterView> {
             pickedTime.hour,
             pickedTime.minute,
           );
-          _dateController.text = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
+          _dateController.text = DateFormat('yyyy년 MM월 dd일 HH시 mm분').format(_selectedDate!);
         });
       }
     }
@@ -78,40 +78,71 @@ class _WriteLetterViewState extends State<WriteLetterView> {
   @override
   Widget build(BuildContext context) {
     final letterViewModel = Provider.of<LetterViewModel>(context, listen: false);
+    final themeColor = Color(0xFFCD001F);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.letter == null ? 'Write Letter' : 'Edit Letter'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 40),
+              Text(
+                '새 편지',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 16.0),
               TextField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(
+                  labelText: '제목',
+                  border: OutlineInputBorder(),
+                ),
               ),
+              SizedBox(height: 16.0),
               TextField(
                 controller: _contentController,
-                decoration: InputDecoration(labelText: 'Content'),
+                decoration: InputDecoration(
+                  labelText: '내용',
+                  border: OutlineInputBorder(),
+                ),
                 maxLines: 5,
               ),
+              SizedBox(height: 16.0),
               GestureDetector(
                 onTap: () => _selectDateTime(context),
                 child: AbsorbPointer(
                   child: TextField(
                     controller: _dateController,
                     decoration: InputDecoration(
-                      labelText: 'Select Date and Time',
+                      labelText: '날짜와 시간 선택',
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
               ),
-              ElevatedButton(
+              SizedBox(height: 16.0),
+              ElevatedButton.icon(
                 onPressed: _pickImage,
-                child: Text('Select Image'),
+                icon: Icon(Icons.image, color: Colors.black),
+                label: Text(
+                  '이미지 선택',
+                  style: TextStyle(color: Colors.black),
+                ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black, backgroundColor: Colors.white,
+                  side: BorderSide(color: Colors.black),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                ),
               ),
+              SizedBox(height: 16.0),
               Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,
@@ -200,7 +231,14 @@ class _WriteLetterViewState extends State<WriteLetterView> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text(widget.letter == null ? 'Send' : 'Update'),
+                child: Text(widget.letter == null ? '보내기' : '수정하기'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: themeColor,
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
               ),
             ],
           ),
