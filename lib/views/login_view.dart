@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
 import '../view_models/user_view_model.dart';
-import 'calendar_view.dart';
-import 'couple_id_input_view.dart';
 import 'register_view.dart';
 
 class LoginView extends StatelessWidget {
@@ -12,59 +10,131 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<LoginViewModel>(context);
-    final userViewModel = Provider.of<UserViewModel>(context);
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    final themeColor = Color(0xFFCD001F);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/login.png'),
+                fit: BoxFit.cover,
+              ),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '로그인',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: TextField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          labelText: '아이디',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: '비밀번호',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Consumer<LoginViewModel>(
+                      builder: (context, loginViewModel, child) {
+                        return Column(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              child: ElevatedButton(
+                                onPressed: loginViewModel.isLoading ? null : () async {
+                                  await loginViewModel.login(
+                                    _usernameController.text,
+                                    _passwordController.text,
+                                    context,
+                                  );
+                                  if (loginViewModel.isLoggedIn) {
+                                    final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+                                    if (userViewModel.user?.coupleId != null) {
+                                      Navigator.pushReplacementNamed(context, '/main');
+                                    } else {
+                                      Navigator.pushReplacementNamed(context, '/coupleInput');
+                                    }
+                                  }
+                                },
+                                child: loginViewModel.isLoading
+                                    ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                )
+                                    : Text(
+                                  '로그인',
+                                  style: TextStyle(color: themeColor),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  textStyle: TextStyle(fontSize: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    side: BorderSide(color: themeColor),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0),  // 줄여진 거리
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => RegisterView()),
+                                );
+                              },
+                              child: Text(
+                                '회원가입',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await loginViewModel.login(
-                  _usernameController.text,
-                  _passwordController.text,
-                  context,
-                );
-                if (loginViewModel.isLoggedIn) {
-                  final userViewModel = Provider.of<UserViewModel>(context, listen: false);
-                  if (userViewModel.user?.coupleId != null) {
-                    Navigator.pushReplacementNamed(context, '/main');
-                  } else {
-                    Navigator.pushReplacementNamed(context, '/coupleInput');
-                  }
-                }
-              },
-              child: Text('Login'),
-            ),
-            if (loginViewModel.isLoading)
-              CircularProgressIndicator(),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterView()),
-                );
-              },
-              child: Text('Don\'t have an account? Register here'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
