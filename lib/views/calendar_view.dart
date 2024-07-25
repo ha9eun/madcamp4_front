@@ -23,146 +23,149 @@ class _CalendarViewState extends State<CalendarView> {
   Widget build(BuildContext context) {
     final userViewModel = Provider.of<UserViewModel>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Calendar'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.black),
-            onPressed: () async {
-              await Provider.of<LoginViewModel>(context, listen: false).logout(context);
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
-      body: Consumer<CoupleViewModel>(
-        builder: (context, coupleViewModel, child) {
-          _selectedEvents = [
-            ..._getEventsForDay(_selectedDay, coupleViewModel.couple?.anniversaries ?? []),
-            ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple?.schedules ?? []),
-          ];
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Consumer<CoupleViewModel>(
+          builder: (context, coupleViewModel, child) {
+            _selectedEvents = [
+              ..._getEventsForDay(_selectedDay, coupleViewModel.couple?.anniversaries ?? []),
+              ..._getSchedulesForDay(_selectedDay, coupleViewModel.couple?.schedules ?? []),
+            ];
 
-          return coupleViewModel.isLoading
-              ? Center(child: CircularProgressIndicator())
-              : coupleViewModel.couple == null
-              ? Center(child: Text('Failed to load couple info'))
-              : Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: RichText(
-                  text: TextSpan(
+            return coupleViewModel.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : coupleViewModel.couple == null
+                ? Center(child: Text('Failed to load couple info'))
+                : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
                     children: [
-                      TextSpan(
-                        text: userViewModel.user?.nickname ?? '',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 24,
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: userViewModel.user?.nickname ?? '',
+                              style: TextStyle(fontSize: 24, color: Colors.black),
+                            ),
+                            WidgetSpan(
+                              child: Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                                size: 24,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' ${coupleViewModel.couple!.partnerNickname}',
+                              style: TextStyle(fontSize: 24, color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
+                              style: TextStyle(fontSize: 24, color: Colors.black),
+                            ),
+                          ],
                         ),
                       ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.partnerNickname}',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.logout, color: Colors.black),
+                          onPressed: () async {
+                            await Provider.of<LoginViewModel>(context, listen: false).logout(context);
+                            Navigator.pushReplacementNamed(context, '/login');
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              TableCalendar(
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 3, 14),
-                focusedDay: _focusedDay,
-                calendarFormat: CalendarFormat.month,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                    _selectedEvents = [
-                      ..._getEventsForDay(selectedDay, coupleViewModel.couple!.anniversaries),
-                      ..._getSchedulesForDay(selectedDay, coupleViewModel.couple!.schedules),
+                TableCalendar(
+                  firstDay: DateTime.utc(2010, 10, 16),
+                  lastDay: DateTime.utc(2030, 3, 14),
+                  focusedDay: _focusedDay,
+                  calendarFormat: CalendarFormat.month,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                      _selectedEvents = [
+                        ..._getEventsForDay(selectedDay, coupleViewModel.couple!.anniversaries),
+                        ..._getSchedulesForDay(selectedDay, coupleViewModel.couple!.schedules),
+                      ];
+                    });
+                  },
+                  eventLoader: (day) {
+                    return [
+                      ..._getEventsForDay(day, coupleViewModel.couple!.anniversaries),
+                      ..._getSchedulesForDay(day, coupleViewModel.couple!.schedules),
                     ];
-                  });
-                },
-                eventLoader: (day) {
-                  return [
-                    ..._getEventsForDay(day, coupleViewModel.couple!.anniversaries),
-                    ..._getSchedulesForDay(day, coupleViewModel.couple!.schedules),
-                  ];
-                },
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, day, events) {
-                    if (events.isNotEmpty) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: events.map((event) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                            width: 5,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: event is Anniversary ? Colors.red : Colors.blue,
-                            ),
-                          );
-                        }).toList(),
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, day, events) {
+                      if (events.isNotEmpty) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: events.map((event) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: event is Anniversary ? Colors.red : Colors.blue,
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }
+                      return null;
+                    },
+                  ),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                    leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+                    rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+                  ),
+                  calendarStyle: CalendarStyle(
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.purple,
+                      shape: BoxShape.circle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: Colors.purple.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _selectedEvents.length,
+                    itemBuilder: (context, index) {
+                      final event = _selectedEvents[index];
+                      return ListTile(
+                        leading: Icon(
+                          event is Anniversary ? Icons.cake : Icons.event,
+                          color: event is Anniversary ? Colors.red : Colors.blue,
+                        ),
+                        title: Text(event.title),
+                        onLongPress: () {
+                          if (event is Schedule) {
+                            _showOptionsDialog(context, event);
+                          }
+                        },
                       );
-                    }
-                    return null;
-                  },
-                ),
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
-                  rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
-                ),
-                calendarStyle: CalendarStyle(
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.5),
-                    shape: BoxShape.circle,
+                    },
                   ),
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _selectedEvents.length,
-                  itemBuilder: (context, index) {
-                    final event = _selectedEvents[index];
-                    return ListTile(
-                      leading: Icon(
-                        event is Anniversary ? Icons.cake : Icons.event,
-                        color: event is Anniversary ? Colors.red : Colors.blue,
-                      ),
-                      title: Text(event.title),
-                      onLongPress: () {
-                        if (event is Schedule) {
-                          _showOptionsDialog(context, event);
-                        }
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(
