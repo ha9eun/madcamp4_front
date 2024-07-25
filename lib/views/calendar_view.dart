@@ -50,33 +50,31 @@ class _CalendarViewState extends State<CalendarView> {
               ? Center(child: Text('Failed to load couple info'))
               : Column(
             children: [
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: userViewModel.user?.nickname ?? '',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: userViewModel.user?.nickname ?? '',
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                      WidgetSpan(
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                          size: 24,
                         ),
-                        WidgetSpan(
-                          child: Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                            size: 24,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' ${coupleViewModel.couple!.partnerNickname}',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                        TextSpan(
-                          text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                      ],
-                    ),
+                      ),
+                      TextSpan(
+                        text: ' ${coupleViewModel.couple!.partnerNickname}',
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: ' ${coupleViewModel.couple!.daysSinceStart}일째 연애중',
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -149,19 +147,17 @@ class _CalendarViewState extends State<CalendarView> {
                   itemCount: _selectedEvents.length,
                   itemBuilder: (context, index) {
                     final event = _selectedEvents[index];
-                    return SingleChildScrollView(
-                      child: ListTile(
-                        leading: Icon(
-                          event is Anniversary ? Icons.cake : Icons.event,
-                          color: event is Anniversary ? Colors.red : Colors.blue,
-                        ),
-                        title: Text(event.title),
-                        onLongPress: () {
-                          if (event is Schedule) {
-                            _showOptionsDialog(context, event);
-                          }
-                        },
+                    return ListTile(
+                      leading: Icon(
+                        event is Anniversary ? Icons.cake : Icons.event,
+                        color: event is Anniversary ? Colors.red : Colors.blue,
                       ),
+                      title: Text(event.title),
+                      onLongPress: () {
+                        if (event is Schedule) {
+                          _showOptionsDialog(context, event);
+                        }
+                      },
                     );
                   },
                 ),
