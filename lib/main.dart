@@ -83,8 +83,10 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'LoveLog',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: themeColor,
+
           inputDecorationTheme: InputDecorationTheme(
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
