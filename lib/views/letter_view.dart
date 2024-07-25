@@ -63,15 +63,19 @@ class _LetterViewState extends State<LetterView> with SingleTickerProviderStateM
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WriteLetterView()),
-          );
-        },
-        backgroundColor: themeColor,
-        child: Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0), // 추가된 여백
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WriteLetterView()),
+            );
+          },
+          backgroundColor: Colors.white,
+          child: Icon(Icons.edit, color: themeColor),
+        ),
       ),
     );
   }
